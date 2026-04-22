@@ -50,7 +50,7 @@
         <main class="product">
             <aside class="product_user_actions">
                 <div class="change_page">
-                    <asp:HyperLink ID="lnkHome" runat="server" NavigateUrl="~/Trangchu.aspx">Home</asp:HyperLink>
+                    <asp:HyperLink ID="lnkHome" runat="server" NavigateUrl="~/Presentation/Trangchu.aspx">Home</asp:HyperLink>
                     <a>> </a><a>Kids</a>
                 </div>
                 <hr />

@@ -98,7 +98,7 @@
                             <ul class="product_list">
                         </HeaderTemplate>
                         <ItemTemplate>
-                            <li data-category='<%# Eval("Category") %>'>
+                            <li data-category='<%# Eval("CategoryID") %>'>
                                 <div class="product_item">
                                     <div class="product_top">
                                         <%# (int)Eval("Sale") > 0 ? $"<div class='sale-ribbon'>-{(int)Eval("Sale")}%</div>" : "" %>
