@@ -40,23 +40,20 @@ namespace BTL_LapTrinhWeb
         {
             if (e.CommandName == "Delete")
             {
-                int productId = int.Parse(e.CommandArgument.ToString());
-
-                var user = (User)Session["UserLoggedIn"];
-
-                _cart.DeleteByProduct(user.Id, productId);
-
+                int cartId = int.Parse(e.CommandArgument.ToString()); // đây là CartID
+                _cart.Delete(cartId); // xóa đúng 1 dòng theo CartID
                 LoadCart();
             }
         }
-        protected void btnDelete_Click(object sender, EventArgs e)
-        {
-            int cartId = int.Parse(((LinkButton)sender).CommandArgument);
+        //protected void btnDelete_Click(object sender, EventArgs e)
+        //{
+        //    int cartId = int.Parse(((LinkButton)sender).CommandArgument);
 
-            _cart.Delete(cartId);
+        //    _cart.Delete(cartId);
 
-            LoadCart();
-        }
+        //    LoadCart();
+        //}
+
 
         public decimal GetTotal(List<CartItem> cart)
         {
@@ -96,5 +93,17 @@ namespace BTL_LapTrinhWeb
             Response.Redirect("~/Presentation/Trangchu.aspx");
         }
         protected void search_button_Click(object sender, ImageClickEventArgs e) { }
+        protected void lnkFavorites_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Presentation/Favorites.aspx");
+        }
+        protected void lnkSignIn_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Presentation/LogIn.aspx");
+        }
+        protected void lnkCart_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Presentation/Cart.aspx");
+        }
     }
 }

@@ -42,12 +42,12 @@ namespace BTL_LapTrinhWeb.DAL
                 {
                     list.Add(new CartItem
                     {
-                        ProductID = (int)rd["ProductID"],
+                        CartID = Convert.ToInt32(rd["CartID"]),
                         Name = rd["ProductName"].ToString(),
-                        Price = (decimal)rd["Price"],
-                        Sale = (int)(decimal)rd["SalePercent"],
-                        Size = rd["Size"] != DBNull.Value ? (int)rd["Size"] : 0,
-                        Quantity = (int)rd["Quantity"],
+                        Price = Convert.ToDecimal(rd["Price"]),
+                        Sale = rd["SalePercent"] != DBNull.Value ? Convert.ToInt32(rd["SalePercent"]) : 0,
+                        Size = rd["Size"] != DBNull.Value ? rd["Size"].ToString() : "0",
+                        Quantity = Convert.ToInt32(rd["Quantity"]),
                         ImageUrl = rd["Image"].ToString()
                     });
                 }

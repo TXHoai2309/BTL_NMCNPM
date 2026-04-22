@@ -17,7 +17,19 @@ namespace BTL_LapTrinhWeb
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack) { LoadProduct(); }
+            if (Session["UserLoggedIn"] is User loggedInUser)
+            {
+                lnkSignIn.Text = !string.IsNullOrEmpty(loggedInUser.Name) ? loggedInUser.Name : loggedInUser.Username;
+            }
+            else
+            {
+                lnkSignIn.Text = "Sign In";
+            }
+
+            if (!IsPostBack)
+            {
+                LoadProduct();
+            }
         }
 
         private void LoadProduct()
@@ -80,7 +92,51 @@ namespace BTL_LapTrinhWeb
 
         protected void btnSubmitReview_Click(object sender, EventArgs e) { /* Logic gửi review */ }
         protected void BuyAndCheckOut_Click(object sender, EventArgs e) { /* Logic thanh toán */ }
-        protected void AddToBag_Click(object sender, EventArgs e) { /* Logic thêm giỏ hàng */ }
+        protected void AddToBag_Click(object sender, EventArgs e)
+        {
+            // 1. Kiểm tra đăng nhập
+            if (!(Session["UserLoggedIn"] is User user))
+            {
+                Response.Redirect("~/Presentation/LogIn.aspx");
+                return;
+            }
+
+            // 2. Lấy ProductID từ property có sẵn
+            if (ProductID <= 0)
+            {
+                return;
+            }
+
+            // 3. Kiểm tra Size (ddlSize là DropDownList chọn size)
+            if (!int.TryParse(ddlSize.SelectedValue, out int size) || size <= 0)
+            {
+                // Hiện thông báo nếu có Label, hoặc dùng alert JS
+                ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                    "alert('Vui lòng chọn size.');", true);
+                return;
+            }
+
+            // 4. Kiểm tra Quantity (txtQuantity là TextBox nhập số lượng)
+            if (!int.TryParse(txtQuantity.Text.Trim(), out int quantity) || quantity <= 0)
+                quantity = 1;
+
+            // 5. Thêm vào giỏ
+            try
+            {
+                _cart.Add(user.Id, ProductID, size, quantity);
+                Response.Redirect("~/Presentation/Cart.aspx");
+            }
+            catch (ArgumentException ex)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                    $"alert('{ex.Message}');", true);
+            }
+            catch (Exception)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "alert",
+                    "alert('Có lỗi xảy ra, vui lòng thử lại.');", true);
+            }
+        }
 
         public bool IsFavorite(string productId)
         {
@@ -98,7 +154,19 @@ namespace BTL_LapTrinhWeb
         }
 
         // Navigation
-        protected void lnkSignIn_Click(object sender, EventArgs e) => Response.Redirect("~/Presentation/LogIn.aspx");
+        protected void lnkSignIn_Click(object sender, EventArgs e)
+        {
+
+            if (Session["UserLoggedIn"] != null)
+            {
+                Response.Redirect("~/Presentation/MyAccount.aspx");
+            }
+            else
+            {
+                // Nếu chưa, chuyển đến Log In
+                Response.Redirect("~/Presentation/LogIn.aspx");
+            }
+        }
         protected void lnkFavorites_Click(object sender, EventArgs e) => Response.Redirect("~/Presentation/Favorites.aspx");
         protected void lnkCart_Click(object sender, EventArgs e) => Response.Redirect("~/Presentation/Cart.aspx");
         protected void search_button_Click(object sender, ImageClickEventArgs e) => Response.Redirect($"~/Presentation/Men.aspx?search={Server.UrlEncode(search_box.Text)}");
