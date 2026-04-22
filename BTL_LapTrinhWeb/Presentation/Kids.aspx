@@ -127,11 +127,15 @@
                                     </div>
 
                                     <div class="product_info">
-                                        <asp:HyperLink runat="server" CssClass="product_name"
-                                            NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>'
-                                            Text='<%# Eval("ProductName") %>' />
+                                        <div class="name-wrapper">
+                                            <asp:HyperLink runat="server" CssClass="product_name"
+                                                NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>'
+                                                Text='<%# Eval("ProductName") %>' />
+                                        </div>
 
-                                        <%# GetPriceDisplay(Container.DataItem) %>
+                                        <div class="price-wrapper">
+                                            <%# GetPriceDisplay(Container.DataItem) %>
+                                        </div>
                                     </div>
                                 </div>
                             </li>
