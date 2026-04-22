@@ -31,5 +31,10 @@ namespace BTL_LapTrinhWeb.BLL
         {
             repo.DeleteByProduct(userId, productId);
         }
+
+        public void ClearCart(int userId)
+        {
+            repo.ClearCart(userId);
+        }
     }
 }

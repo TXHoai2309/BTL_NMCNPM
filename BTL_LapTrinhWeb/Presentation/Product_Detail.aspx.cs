@@ -91,7 +91,27 @@ namespace BTL_LapTrinhWeb
         }
 
         protected void btnSubmitReview_Click(object sender, EventArgs e) { /* Logic gửi review */ }
-        protected void BuyAndCheckOut_Click(object sender, EventArgs e) { /* Logic thanh toán */ }
+        protected void BuyAndCheckOut_Click(object sender, EventArgs e)
+        {
+            var product = _pm.GetByID(ProductID);
+            if (product == null) return;
+
+            Session["Cart"] = new List<CartItem>
+    {
+        new CartItem
+        {
+            CartID = product.ProductID,
+            Name = product.ProductName,
+            Price = product.Price,
+            Quantity = 1,
+            ImageUrl = product.Image,
+            Size = product.Size,
+            Sale = Convert.ToInt32(product.SalePercent)
+        }
+    };
+
+            Response.Redirect("~/Presentation/Checkout.aspx");
+        }
         protected void AddToBag_Click(object sender, EventArgs e)
         {
             // 1. Kiểm tra đăng nhập

@@ -43,6 +43,7 @@ namespace BTL_LapTrinhWeb.DAL
                     list.Add(new CartItem
                     {
                         CartID = Convert.ToInt32(rd["CartID"]),
+                        ProductID = Convert.ToInt32(rd["ProductID"]), // Thêm dòng này
                         Name = rd["ProductName"].ToString(),
                         Price = Convert.ToDecimal(rd["Price"]),
                         Sale = rd["SalePercent"] != DBNull.Value ? Convert.ToInt32(rd["SalePercent"]) : 0,
@@ -95,6 +96,18 @@ namespace BTL_LapTrinhWeb.DAL
                 cmd.Parameters.AddWithValue("@UserID", userId);
                 cmd.Parameters.AddWithValue("@ProductID", productId);
 
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void ClearCart(int userId)
+        {
+            using (SqlConnection conn = DBHelper.GetConnection())
+            {
+                SqlCommand cmd = new SqlCommand(
+                    "DELETE FROM Cart WHERE UserID = @UserID", conn);
+                cmd.Parameters.AddWithValue("@UserID", userId);
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }

@@ -1,4 +1,5 @@
-﻿using BTL_LapTrinhWeb.Models;
+﻿using BTL_LapTrinhWeb.BLL;
+using BTL_LapTrinhWeb.Models;
 using BTL_LapTrinhWeb.Services;
 using System;
 using System.Collections.Generic;
@@ -41,11 +42,18 @@ namespace BTL_LapTrinhWeb
             return Session["UserLoggedIn"] as User;
         }
 
+        //private List<CartItem> GetCart()
+        //{
+        //    return Session["ShoppingCart"] as List<CartItem> ?? new List<CartItem>();
+        //}
+        private CartManager _cartManager = new CartManager();
+
         private List<CartItem> GetCart()
         {
-            return Session["ShoppingCart"] as List<CartItem> ?? new List<CartItem>();
+            var user = GetCurrentUser();
+            if (user == null) return new List<CartItem>();
+            return _cartManager.GetCart(user.Id); // dùng user.Id như Cart.aspx
         }
-
         // ================= LOAD =================
         private void FillUserInfo()
         {
@@ -201,25 +209,33 @@ namespace BTL_LapTrinhWeb
             var cart = GetCart();
             var user = GetCurrentUser();
 
-            if (!cart.Any() || user == null)
+            if (!cart.Any())
             {
-                Response.Redirect("~/Presentation/Cart.aspx");
+                lblEmptyCart.Text = "Giỏ hàng trống!";
+                lblEmptyCart.Visible = true;
+                return;
+            }
+
+            if (user == null)
+            {
+                Response.Redirect("~/Presentation/LogIn.aspx");
                 return;
             }
 
             var order = _service.ProcessOrder(
-                user,
-                cart,
+                user, cart,
                 rblPaymentMethod.SelectedValue,
-                txtAddress1.Text,
-                txtCity.Text,
-                txtPostal.Text
+                txtAddress1.Text, txtCity.Text, txtPostal.Text
             );
 
-            Session.Remove("ShoppingCart");
-            Session["LastOrderCode"] = order.OrderNumber;
+            // Xóa cart trong DB sau khi đặt hàng thành công
+            _cartManager.ClearCart(user.Id); // thêm method này vào CartManager
+                                             // ❌ Bỏ dòng này: Session.Remove("ShoppingCart");
 
+            Session["LastOrderCode"] = order.OrderNumber;
             Response.Redirect("~/Presentation/ThankYou.aspx");
         }
+
+        
     }
 }

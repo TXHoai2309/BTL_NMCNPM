@@ -23,6 +23,7 @@ namespace BTL_LapTrinhWeb.BLL
 
             return new Order
             {
+                UserID = user.UserID,
                 OrderNumber = orderCode,
                 Date = DateTime.Now,
                 UserName = user.Name,

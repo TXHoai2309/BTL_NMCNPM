@@ -7,6 +7,7 @@ namespace BTL_LapTrinhWeb.Models
 {
     public class CartItem
     {
+        public int ProductID { get; set; }
         public int CartID { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
