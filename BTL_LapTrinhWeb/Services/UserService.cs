@@ -18,6 +18,7 @@ namespace BTL_LapTrinhWeb.Services
                 return new User { Username = "admin", Name = "Administrator" };
             }
 
+            //
             return _manager.ValidateUser(username, password);
         }
 
