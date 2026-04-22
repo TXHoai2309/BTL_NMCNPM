@@ -19,18 +19,18 @@ namespace BTL_LapTrinhWeb
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            if (Session["UserLoggedIn"] is User loggedInUser)
             {
-                LoadProducts();
-            }
-            if (Session["UserLoggedIn"] != null)
-            {
-                User loggedInUser = (User)Session["UserLoggedIn"];
-                lnkSignIn.Text = loggedInUser.Username;
+                lnkSignIn.Text = !string.IsNullOrEmpty(loggedInUser.Name) ? loggedInUser.Name : loggedInUser.Username;
             }
             else
             {
                 lnkSignIn.Text = "Sign In";
+            }
+
+            if (!IsPostBack)
+            {
+                LoadProducts();
             }
         }
 
@@ -70,14 +70,12 @@ namespace BTL_LapTrinhWeb
         {
             LoadProducts();
         }
-        public bool IsFavorite(string productId, string category)
+        protected bool IsFavorite(string productId)
         {
-            // Lấy danh sách yêu thích từ Session đã khởi tạo ở Global.asax
             var favorites = Session["Favorites"] as List<string>;
             if (favorites == null) return false;
 
-            // Kiểm tra key theo đúng định dạng bạn lưu (ví dụ: "Kids-1")
-            string key = $"{category}-{productId}";
+            string key = $"Product-{productId}";
             return favorites.Contains(key);
         }
 
@@ -93,7 +91,16 @@ namespace BTL_LapTrinhWeb
         }
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Presentation/LogIn.aspx");
+
+            if (Session["UserLoggedIn"] != null)
+            {
+                Response.Redirect("~/Presentation/MyAccount.aspx");
+            }
+            else
+            {
+                // Nếu chưa, chuyển đến Log In
+                Response.Redirect("~/Presentation/LogIn.aspx");
+            }
         }
 
         // Xử lý khi nhấn nút Favorites ở Header

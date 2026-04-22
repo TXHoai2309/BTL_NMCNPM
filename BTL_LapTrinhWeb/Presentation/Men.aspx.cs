@@ -19,23 +19,19 @@ namespace BTL_LapTrinhWeb
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            if (Session["UserLoggedIn"] is User loggedInUser)
             {
-                CurrentCategory = "All";
-            }
-
-            // Thêm vào đây
-            if (Session["UserLoggedIn"] != null)
-            {
-                User loggedInUser = (User)Session["UserLoggedIn"];
-                lnkSignIn.Text = loggedInUser.Username;
+                lnkSignIn.Text = !string.IsNullOrEmpty(loggedInUser.Name) ? loggedInUser.Name : loggedInUser.Username;
             }
             else
             {
                 lnkSignIn.Text = "Sign In";
             }
 
-            LoadProducts();
+            if (!IsPostBack)
+            {
+                LoadProducts();
+            }
         }
         private void LoadProducts()
         {
@@ -108,10 +104,16 @@ namespace BTL_LapTrinhWeb
         }
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Presentation/LogIn.aspx");
-        }
 
-        // Xử lý khi nhấn nút Favorites ở Header
+            if (Session["UserLoggedIn"] != null)
+            {
+                Response.Redirect("~/Presentation/MyAccount.aspx");
+            }
+            else
+            {
+                Response.Redirect("~/Presentation/LogIn.aspx");
+            }
+        }
         protected void lnkFavorites_Click(object sender, EventArgs e)
         {
             if (Session["UserLoggedIn"] != null)

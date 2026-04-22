@@ -11,6 +11,13 @@ namespace BTL_LapTrinhWeb
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
+            Response.Cache.SetExpires(DateTime.UtcNow.AddMinutes(-1));
+            if (Session["UserLoggedIn"] != null)
+            {
+                Response.Redirect("~/Presentation/Trangchu.aspx");
+            }
             if (!IsPostBack)
             {
                 HttpCookie rememberCookie = Request.Cookies["RememberMe"];

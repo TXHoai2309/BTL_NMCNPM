@@ -67,7 +67,7 @@ namespace BTL_LapTrinhWeb.DAL
         {
             using (SqlConnection conn = DBHelper.GetConnection())
             {
-                SqlCommand cmd = new SqlCommand("sp_InsertProduct", conn);
+                SqlCommand cmd = new SqlCommand("sp_InsertProductFull", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@ProductName", p.ProductName);
@@ -81,7 +81,7 @@ namespace BTL_LapTrinhWeb.DAL
                 cmd.Parameters.AddWithValue("@Image3", p.Image3);
                 cmd.Parameters.AddWithValue("@Image4", p.Image4);
                 cmd.Parameters.AddWithValue("@Gender", p.Gender);
-                cmd.Parameters.AddWithValue("@Size", p.Size);
+                cmd.Parameters.AddWithValue("@Size", p.Size ?? "");
                 cmd.Parameters.AddWithValue("@SalePercent", p.SalePercent);
 
                 conn.Open();

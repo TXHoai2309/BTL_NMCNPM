@@ -47,34 +47,27 @@ namespace BTL_LapTrinhWeb.DAL
 
         public void Register(User u)
         {
-            try
+            using (SqlConnection conn = DBHelper.GetConnection())
             {
-                using (SqlConnection conn = DBHelper.GetConnection())
-                {
-                    SqlCommand cmd = new SqlCommand("sp_RegisterUser", conn);
-                    cmd.CommandType = CommandType.StoredProcedure;
+                SqlCommand cmd = new SqlCommand("sp_RegisterUser", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@Username", u.Username);
-                    cmd.Parameters.AddWithValue("@Password", u.Password);
-                    cmd.Parameters.AddWithValue("@Surname", u.Surname);
-                    cmd.Parameters.AddWithValue("@Name", u.Name);
-                    cmd.Parameters.AddWithValue("@Email", u.Email);
-                    cmd.Parameters.AddWithValue("@Phone", u.Phone);
-                    cmd.Parameters.AddWithValue("@QueQuan", u.QueQuan);
-                    cmd.Parameters.AddWithValue("@Address1", (object)u.Address1 ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Address2", (object)u.Address2 ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Postal", (object)u.Postal ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@City", (object)u.City ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Country", (object)u.Country ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Username", u.Username);
+                cmd.Parameters.AddWithValue("@Password", u.Password);
+                cmd.Parameters.AddWithValue("@Surname", u.Surname);
+                cmd.Parameters.AddWithValue("@Name", u.Name);
+                cmd.Parameters.AddWithValue("@Email", u.Email);
+                cmd.Parameters.AddWithValue("@Phone", u.Phone);
+                cmd.Parameters.AddWithValue("@QueQuan", u.QueQuan);
 
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                // Đặt breakpoint ở đây, hoặc hiện thông báo lỗi
-                throw new Exception("Lỗi đăng ký: " + ex.Message);
+                cmd.Parameters.AddWithValue("@Address1", (object)u.Address1 ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Address2", (object)u.Address2 ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Postal", (object)u.Postal ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@City", (object)u.City ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@Country", (object)u.Country ?? DBNull.Value);
+
+                conn.Open();
+                cmd.ExecuteNonQuery();
             }
         }
 
@@ -111,6 +104,8 @@ namespace BTL_LapTrinhWeb.DAL
             using (SqlConnection conn = DBHelper.GetConnection())
             {
                 SqlCommand cmd = new SqlCommand("sp_GetUserByID", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+
                 cmd.Parameters.AddWithValue("@UserID", userId);
 
                 conn.Open();
@@ -122,20 +117,9 @@ namespace BTL_LapTrinhWeb.DAL
                     {
                         Id = (int)reader["UserID"],
                         Username = reader["Username"].ToString(),
-                        Name = reader["Name"]?.ToString(),
-                        Surname = reader["Surname"]?.ToString(),
-                        Email = reader["Email"]?.ToString(),
-                        Phone = reader["Phone"]?.ToString(),
-                        QueQuan = reader["QueQuan"]?.ToString(),
-                        Address1 = reader["Address1"]?.ToString(),
-                        Address2 = reader["Address2"]?.ToString(),
-                        Postal = reader["Postal"]?.ToString(),
-                        City = reader["City"]?.ToString(),
-                        Country = reader["Country"]?.ToString()
                     };
                 }
             }
-
             return null;
         }
 
@@ -147,16 +131,16 @@ namespace BTL_LapTrinhWeb.DAL
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@UserID", u.Id);
-                cmd.Parameters.AddWithValue("@Surname", u.Surname);
-                cmd.Parameters.AddWithValue("@Name", u.Name);
-                cmd.Parameters.AddWithValue("@Email", u.Email);
-                cmd.Parameters.AddWithValue("@Phone", u.Phone);
-                cmd.Parameters.AddWithValue("@QueQuan", u.QueQuan);
-                cmd.Parameters.AddWithValue("@Address1", u.Address1);
-                cmd.Parameters.AddWithValue("@Address2", u.Address2);
-                cmd.Parameters.AddWithValue("@Postal", u.Postal);
-                cmd.Parameters.AddWithValue("@City", u.City);
-                cmd.Parameters.AddWithValue("@Country", u.Country);
+                cmd.Parameters.AddWithValue("@Surname", u.Surname ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@Name", u.Name ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@Email", u.Email ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@Phone", u.Phone ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@QueQuan", u.QueQuan ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@Address1", u.Address1 ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@Address2", u.Address2 ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@Postal", u.Postal ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@City", u.City ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@Country", u.Country ?? (object)DBNull.Value);
 
                 conn.Open();
                 cmd.ExecuteNonQuery();

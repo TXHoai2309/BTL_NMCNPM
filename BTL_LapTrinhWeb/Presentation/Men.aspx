@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Men.aspx.cs" Inherits="BTL_LapTrinhWeb.Men" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Men.aspx.cs" Inherits="BTL_LapTrinhWeb.Men" EnableEventValidation="false"%>
 
 <!DOCTYPE html>
 <html lang="en">
