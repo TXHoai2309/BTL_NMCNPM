@@ -1,48 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using BTL_LapTrinhWeb.Models;
 
 namespace BTL_LapTrinhWeb.DAL
 {
     public class ProductDetailRepository
     {
-        public List<Products> GetAllProducts()
-        {
-            return HttpContext.Current.Application["AllProducts"] as List<Products>
-                   ?? new List<Products>();
-        }
+        private ProductRepository _repo = new ProductRepository();
 
         public Products GetProductById(int id)
         {
-            return GetAllProducts().FirstOrDefault(p => p.ProductID == id);
+            return _repo.GetProductByID(id);
         }
 
-        public List<Products> GetSimilarProducts(Products current)
+        public List<Products> GetSimilarProducts(int categoryId, string gender, int productId)
         {
-            return GetAllProducts()
-                .Where(p => p.Category == current.Category &&
-                            p.Gender == current.Gender &&
-                            p.ProductID != current.ProductID)
+            return _repo.GetAllProducts()
+                .Where(p => p.CategoryID == categoryId &&
+                            p.Gender == gender &&
+                            p.ProductID != productId)
+                .Take(6)
                 .ToList();
-        }
-
-        public List<Review> GetAllReviews()
-        {
-            return HttpContext.Current.Application["AllReviews"] as List<Review>
-                   ?? new List<Review>();
-        }
-
-        public void SaveReviews(List<Review> reviews)
-        {
-            HttpContext.Current.Application["AllReviews"] = reviews;
-        }
-
-        public List<Order> GetOrders()
-        {
-            return HttpContext.Current.Application["OrderHistory"] as List<Order>
-                   ?? new List<Order>();
         }
     }
 }

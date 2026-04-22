@@ -1,4 +1,4 @@
-﻿    <%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ManageUser.aspx.cs" Inherits="BTL_LapTrinhWeb.ManageUser" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ManageUser.aspx.cs" Inherits="BTL_LapTrinhWeb.ManageUser" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,19 +6,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
-    <link rel="stylesheet" href="~/Assets/css/Admin.css" runat="server" /> 
+    <link rel="stylesheet" href="~/Assets/css/Admin.css" runat="server" />
     <link rel="stylesheet" href="~/Assets/css/UserManager.css" runat="server" />
 </head>
 <body>
     <form id="form1" runat="server">
         <div class="container">
             <div class="admin-header">
-                    <div class="header-title">
-                        <h1>User Management</h1>
-                    </div>
-                    <div class="header-logo">
-                        <b class="first_logo">IT</b><b class="last_logo"> Shoes</b>
-                    </div>
+                <div class="header-title">
+                    <h1>User Management</h1>
+                </div>
+                <div class="header-logo">
+                    <b class="first_logo">IT</b><b class="last_logo"> Shoes</b>
+                </div>
                 <div class="header-search">
                     <asp:TextBox ID="txtSearch" runat="server" placeholder="Search Products" CssClass="search_box" />
                     <asp:ImageButton ID="btnSearch" runat="server" ImageUrl="~/Assets/images/Chung/kinhlup.png" OnClick="btnSearch_Click" CssClass="search_button" />
@@ -26,8 +26,8 @@
             </div>
             <nav class="menu">
                 <ul id="menu_list">
-                    <li><a href='<%= ResolveUrl("~/Admin.aspx") %>' class="menu_item">Product Management</a></li>
-                    <li><a href='<%= ResolveUrl("~/ManageUser.aspx") %>' class="menu_item">User Management</a></li>
+                    <li><a href='<%= ResolveUrl("~/Presentation/Admin.aspx") %>' class="menu_item">Product Management</a></li>
+                    <li><a href='<%= ResolveUrl("~/Presentation/ManageUser.aspx") %>' class="menu_item">User Management</a></li>
                 </ul>
             </nav>
             <div class="button-container">

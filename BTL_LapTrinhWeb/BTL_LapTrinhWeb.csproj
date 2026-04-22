@@ -319,6 +319,7 @@
     <Compile Include="BLL\ProductManager.cs" />
     <Compile Include="BLL\UserManager.cs" />
     <Compile Include="DAL\CartRepository.cs" />
+    <Compile Include="DAL\DBHelper.cs" />
     <Compile Include="DAL\OrderRepository.cs" />
     <Compile Include="DAL\ProductDetailRepository.cs" />
     <Compile Include="DAL\ProductRepository.cs" />

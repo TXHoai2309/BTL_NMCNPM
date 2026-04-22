@@ -27,13 +27,18 @@ namespace BTL_LapTrinhWeb
             string username = txtTenDangNhap.Text.Trim();
             string password = txtMatKhau.Text.Trim();
 
-            // 👉 GỌI SERVICE
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                lblThongbao.Text = "Please enter username and password!";
+                lblThongbao.Visible = true;
+                return;
+            }
+
             UserService service = new UserService();
             User foundUser = service.Login(username, password);
 
             if (foundUser != null)
             {
-                // 👉 COOKIE (GIỮ NGUYÊN LOGIC)
                 if (chkGhiNho.Checked)
                 {
                     HttpCookie rememberCookie = new HttpCookie("RememberMe", foundUser.Username)
@@ -55,8 +60,8 @@ namespace BTL_LapTrinhWeb
                 }
 
                 Session["UserLoggedIn"] = foundUser;
+                Session["UserID"] = foundUser.Id;
 
-                // 👉 PHÂN ROLE (admin)
                 if (foundUser.Username.Equals("admin", StringComparison.OrdinalIgnoreCase))
                 {
                     Response.Redirect("~/Presentation/Admin.aspx");
@@ -73,7 +78,9 @@ namespace BTL_LapTrinhWeb
             }
         }
 
-        protected void search_button_Click(object sender, ImageClickEventArgs e) { }
+        protected void search_button_Click(object sender, ImageClickEventArgs e)
+        {
+        }
 
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
@@ -101,10 +108,11 @@ namespace BTL_LapTrinhWeb
             else
             {
                 Response.Redirect("~/Presentation/LogIn.aspx");
-                ///
             }
         }
 
-        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e) { }
+        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e)
+        {
+        }
     }
 }

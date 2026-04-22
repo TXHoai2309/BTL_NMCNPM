@@ -62,7 +62,7 @@ namespace BTL_LapTrinhWeb
         }
         protected void btnBackToLogin_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/LogIn.aspx");
+            Response.Redirect("~/Presentation/LogIn.aspx");
         }
     }
 }

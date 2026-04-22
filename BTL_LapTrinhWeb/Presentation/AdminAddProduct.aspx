@@ -4,7 +4,7 @@
 <html lang="en">
 <head runat="server">
     <title>Add New Product</title>
-    <link rel="stylesheet" href="~/Assets/css/Admin.css" runat="server" /> 
+    <link rel="stylesheet" href="~/Assets/css/Admin.css" runat="server" />
 </head>
 <body>
     <form id="form1" runat="server">
@@ -66,7 +66,7 @@
                 </div>
                 <div class="form-actions">
                     <asp:Label ID="lblErrorMessage" runat="server" CssClass="error-message" Visible="false"></asp:Label>
-                    <asp:HyperLink ID="btnCancel" runat="server" Text="Cancel" NavigateUrl="~/Admin.aspx" CssClass="form-button btn-cancel"></asp:HyperLink>
+                    <asp:HyperLink ID="btnCancel" runat="server" Text="Cancel" NavigateUrl="~/Presentation/Admin.aspx" CssClass="form-button btn-cancel"></asp:HyperLink>
                     <asp:Button ID="btnSave" runat="server" Text="Save Product" OnClick="btnSave_Click" CssClass="form-button btn-save" />
                 </div>
             </div>

@@ -1,136 +1,87 @@
-﻿using BTL_LapTrinhWeb.Models;
-using BTL_LapTrinhWeb.Services;
+﻿using BTL_LapTrinhWeb.BLL;
+using BTL_LapTrinhWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace BTL_LapTrinhWeb
 {
     public partial class Cart : System.Web.UI.Page
     {
-        private CartService _service = new CartService();
+        CartManager _cart = new CartManager();
 
-        // ================= PAGE LOAD =================
         protected void Page_Load(object sender, EventArgs e)
         {
-            HandleUserSession();
-
             if (!IsPostBack)
             {
                 LoadCart();
             }
         }
 
-        // ================= USER =================
-        private void HandleUserSession()
-        {
-            if (Session["UserLoggedIn"] is User user)
-            {
-                lnkSignIn.Text = user.Name;
-                lnkSignIn.Click -= lnkSignIn_Click;
-                lnkSignIn.Click += lnkMyAccount_Click;
-            }
-        }
-
-        // ================= LOAD =================
         private void LoadCart()
         {
-            var cart = _service.GetCart();
-
-            if (cart.Any())
+            if (!(Session["UserLoggedIn"] is User user))
             {
-                rptCartItems.DataSource = cart;
-                rptCartItems.DataBind();
-                pnlEmptyCart.Visible = false;
-            }
-            else
-            {
-                rptCartItems.DataSource = null;
-                rptCartItems.DataBind();
-                pnlEmptyCart.Visible = true;
+                Response.Redirect("~/Presentation/LogIn.aspx");
+                return;
             }
 
-            UpdateTotals(cart);
+            var data = _cart.GetCart(user.Id);
+            var total = data.Sum(i => i.LineTotal);
+
+            litTotalPurchase.Text = $"$ {total:F2}";
+            litGrandTotal.Text = $"$ {total:F2}";
+            rptCartItems.DataSource = data;
+            rptCartItems.DataBind();
         }
-
-        // ================= TOTAL =================
-        private void UpdateTotals(List<CartItem> cart)
-        {
-            decimal total = _service.GetTotal(cart);
-            decimal delivery = 0;
-            decimal grand = total + delivery;
-
-            litTotalPurchase.Text = $"${total:F2}";
-            litDelivery.Text = delivery == 0 ? "FREE" : $"${delivery:F2}";
-            litGrandTotal.Text = $"${grand:F2}";
-
-            btnSecureCheckout.Enabled = cart.Any();
-        }
-
-        // ================= REPEATER =================
-        protected void rptCartItems_ItemDataBound(object sender, RepeaterItemEventArgs e)
-        {
-            if (e.Item.ItemType != ListItemType.Item &&
-                e.Item.ItemType != ListItemType.AlternatingItem) return;
-
-            var item = (CartItem)e.Item.DataItem;
-            var litSale = (Literal)e.Item.FindControl("litSaleInfo");
-
-            litSale.Visible = item.Sale > 0;
-
-            if (item.Sale > 0)
-            {
-                litSale.Text = $"<p class='sale-info'>Sale: -{item.Sale}%</p>";
-            }
-        }
-
         protected void rptCartItems_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
-            if (e.CommandName != "Delete") return;
+            if (e.CommandName == "Delete")
+            {
+                int productId = int.Parse(e.CommandArgument.ToString());
 
-            string productNumber = e.CommandArgument.ToString();
+                var user = (User)Session["UserLoggedIn"];
 
-            _service.RemoveItem(productNumber);
+                _cart.DeleteByProduct(user.Id, productId);
+
+                LoadCart();
+            }
+        }
+        protected void btnDelete_Click(object sender, EventArgs e)
+        {
+            int cartId = int.Parse(((LinkButton)sender).CommandArgument);
+
+            _cart.Delete(cartId);
 
             LoadCart();
         }
 
-        // ================= SEARCH =================
-        protected void search_button_Click(object sender, ImageClickEventArgs e) { }
-
-        // ================= NAV =================
-        protected void lnkSignIn_Click(object sender, EventArgs e)
+        public decimal GetTotal(List<CartItem> cart)
         {
-            Response.Redirect("~/Presentation/LogIn.aspx");
-        }
+            decimal total = 0;
 
-        protected void lnkMyAccount_Click(object sender, EventArgs e)
+            foreach (var item in cart)
+            {
+                total += item.LineTotal;
+            }
+
+            return total;
+        }
+        protected void rptCartItems_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-            Response.Redirect("~/Presentation/MyAccount.aspx");
-        }
+            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            {
+                var item = (CartItem)e.Item.DataItem;
 
-        protected void lnkFavorites_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("~/Presentation/Favorites.aspx");
-        }
+                Literal litSale = (Literal)e.Item.FindControl("litSaleInfo");
 
-        protected void lnkCart_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("~/Presentation/Cart.aspx");
+                if (item.Sale > 0)
+                {
+                    litSale.Visible = true;
+                    litSale.Text = $"<p style='color:red;'>Sale: -{item.Sale}%</p>";
+                }
+            }
         }
-
-        protected void btnContinueShopping_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("~/Presentation/Trangchu.aspx");
-        }
-
-        protected void btnSecureCheckout_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("~/Presentation/Checkout.aspx");
-        }
-
-        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e) { }
     }
 }

@@ -1,10 +1,10 @@
-﻿using BTL_LapTrinhWeb.Models;
-using BTL_LapTrinhWeb.Services; // 🔥 QUAN TRỌNG
-using System;
+﻿using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using BTL_LapTrinhWeb.Models;
+using BTL_LapTrinhWeb.BLL;
 
 namespace BTL_LapTrinhWeb
 {
@@ -26,7 +26,6 @@ namespace BTL_LapTrinhWeb
             string soDienThoai = txtPhoneNumber.Text.Trim();
             string quequan = txtQueQuan.Text.Trim();
 
-            // ===== VALIDATION (GIỮ NGUYÊN) =====
             if (string.IsNullOrEmpty(ho))
             {
                 ShowError(lblHoNguoiDungError, "Surname cannot be empty");
@@ -41,19 +40,19 @@ namespace BTL_LapTrinhWeb
 
             if (tenDangNhap.Length < 5)
             {
-                ShowError(lblTenDangNhapError, "Username must be at least 5 characters long");
+                ShowError(lblTenDangNhapError, "Username must be at least 5 characters");
                 isValid = false;
             }
 
             if (matKhau.Length < 6)
             {
-                ShowError(lblMatKhauError, "Password must be at least 6 characters long");
+                ShowError(lblMatKhauError, "Password must be at least 6 characters");
                 isValid = false;
             }
 
             if (string.IsNullOrEmpty(xacNhanMatKhau))
             {
-                ShowError(lblXacNhanMatKhauError, "Please confirm your password");
+                ShowError(lblXacNhanMatKhauError, "Confirm password required");
                 isValid = false;
             }
             else if (matKhau != xacNhanMatKhau)
@@ -64,38 +63,27 @@ namespace BTL_LapTrinhWeb
 
             if (!Regex.IsMatch(email, @"^[a-zA-Z0-9]+@gmail\.com$"))
             {
-                ShowError(lblEmailError, "Invalid email format");
+                ShowError(lblEmailError, "Invalid email");
                 isValid = false;
             }
 
             if (!Regex.IsMatch(soDienThoai, @"^0[1-9]\d{8}$"))
             {
-                ShowError(lblPhoneNumberError, "Invalid phone number");
+                ShowError(lblPhoneNumberError, "Invalid phone");
                 isValid = false;
             }
 
-            if (!Regex.IsMatch(quequan, @"^[A-Za-zÀ-ỹ\s]+$") || string.IsNullOrEmpty(quequan))
+            if (string.IsNullOrEmpty(quequan))
             {
-                ShowError(lblQueQuanError, "Invalid hometown");
+                ShowError(lblQueQuanError, "Hometown required");
                 isValid = false;
             }
 
             if (!isValid) return;
 
-            // ===== GỌI SERVICE =====
-            UserService service = new UserService();
+            UserManager manager = new UserManager();
 
-            // check trùng username
-            if (service.IsUsernameExists(tenDangNhap))
-            {
-                lblThongbao.Text = "Username already exists";
-                lblThongbao.ForeColor = Color.Red;
-                lblThongbao.Visible = true;
-                return;
-            }
-
-            // tạo user
-            User nguoiDungMoi = new User
+            User user = new User
             {
                 Surname = ho,
                 Name = ten,
@@ -106,16 +94,23 @@ namespace BTL_LapTrinhWeb
                 QueQuan = quequan
             };
 
-            bool success = service.Register(nguoiDungMoi);
+            bool success = manager.Register(user);
 
             if (success)
             {
-                lblThongbao.Text = "Registration successful";
+                lblThongbao.Text = "Registration successful!";
                 lblThongbao.ForeColor = Color.Green;
                 lblThongbao.Visible = true;
 
                 ClearFormFields();
+
                 Response.Redirect("~/Presentation/LogIn.aspx");
+            }
+            else
+            {
+                lblThongbao.Text = "Username already exists!";
+                lblThongbao.ForeColor = Color.Red;
+                lblThongbao.Visible = true;
             }
         }
 
@@ -125,15 +120,16 @@ namespace BTL_LapTrinhWeb
             txtTenNguoiDung.Text = "";
             txtTenDangNhap.Text = "";
             txtMatKhau.Text = "";
+            txtXacNhanMatKhau.Text = "";
             txtEmail.Text = "";
             txtPhoneNumber.Text = "";
             txtQueQuan.Text = "";
         }
 
-        private void ShowError(Label errorLabel, string message)
+        private void ShowError(Label lbl, string msg)
         {
-            errorLabel.Text = message;
-            errorLabel.Visible = true;
+            lbl.Text = msg;
+            lbl.Visible = true;
         }
 
         private void ClearAllErrors()
@@ -151,30 +147,26 @@ namespace BTL_LapTrinhWeb
         protected void lnkFavorites_Click(object sender, EventArgs e)
         {
             if (Session["UserLoggedIn"] != null)
-                Response.Redirect("~/Favorites.aspx");
+                Response.Redirect("~/Presentation/Favorites.aspx");
             else
-                Response.Redirect("~/LogIn.aspx");
+                Response.Redirect("~/Presentation/LogIn.aspx");
         }
 
         protected void lnkCart_Click(object sender, EventArgs e)
         {
             if (Session["UserLoggedIn"] != null)
-                Response.Redirect("~/Cart.aspx");
+                Response.Redirect("~/Presentation/Cart.aspx");
             else
                 Response.Redirect("~/Presentation/LogIn.aspx");
         }
-        protected void search_button_Click(object sender, ImageClickEventArgs e)
-        {
-            // tạm thời để trống hoặc redirect
-        }
+
+        protected void search_button_Click(object sender, ImageClickEventArgs e) { }
+
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Presentation/LogIn.aspx");
         }
-        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e)
-        {
-            // tạm thời để trống
-        }
-    }
 
+        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e) { }
+    }
 }

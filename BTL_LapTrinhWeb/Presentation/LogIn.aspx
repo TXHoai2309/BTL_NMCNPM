@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head runat="server"> 
+<head runat="server">
     <%-- Cho phép bạn có thể điều khiển các thẻ trong head từ C# --%>
     <meta charset="UTF-8" />
     <%-- Dảm bảo các ký tự được hiển thị chính xác --%>
@@ -42,10 +42,10 @@
             <%-- Đây là 1 đoạn mã C# ngắn, đảm bảo rằng đường dẫn đến các trang luôn chính xác, bất kể trang Login đang ở đâu --%>
             <nav class="menu">
                 <ul id="menu_list">
-                    <li><a href='<%= ResolveUrl("~/Men.aspx") %>' class="menu_item">Men</a></li>
-                    <li><a href='<%= ResolveUrl("~/Women.aspx") %>' class="menu_item">Women</a></li>
-                    <li><a href='<%= ResolveUrl("~/Kids.aspx") %>' class="menu_item">Kids</a></li>
-                    <li><a href='<%= ResolveUrl("~/Sale.aspx") %>' class="menu_item">Sale</a></li>
+                    <li><a href='<%= ResolveUrl("~/Presentation/Men.aspx") %>' class="menu_item">Men</a></li>
+                    <li><a href='<%= ResolveUrl("~/Presentation/Women.aspx") %>' class="menu_item">Women</a></li>
+                    <li><a href='<%= ResolveUrl("~/Presentation/Kids.aspx") %>' class="menu_item">Kids</a></li>
+                    <li><a href='<%= ResolveUrl("~/Presentation/Sale.aspx") %>' class="menu_item">Sale</a></li>
                 </ul>
             </nav>
         </header>
@@ -88,11 +88,11 @@
         <footer class="footer_container">
             <div class="shop_menu">
                 <p><b>SHOP</b></p>
-                <p><a href='<%= ResolveUrl("~/Trangchu.aspx") %>' class="menu_item">Home</a></p>
-                <p><a href='<%= ResolveUrl("~/Women.aspx") %>' class="menu_item">Women</a></p>
-                <p><a href='<%= ResolveUrl("~/Men.aspx") %>' class="menu_item">Men</a></p>
-                <p><a href='<%= ResolveUrl("~/Kids.aspx") %>' class="menu_item">Kids</a></p>
-                <p><a href='<%= ResolveUrl("~/Sale.aspx") %>' class="menu_item">Sale</a></p>
+                <p><a href='<%= ResolveUrl("~/Presentation/Trangchu.aspx") %>' class="menu_item">Home</a></p>
+                <p><a href='<%= ResolveUrl("~/Presentation/Women.aspx") %>' class="menu_item">Women</a></p>
+                <p><a href='<%= ResolveUrl("~/Presentation/Men.aspx") %>' class="menu_item">Men</a></p>
+                <p><a href='<%= ResolveUrl("~/Presentation/Kids.aspx") %>' class="menu_item">Kids</a></p>
+                <p><a href='<%= ResolveUrl("~/Presentation/Sale.aspx") %>' class="menu_item">Sale</a></p>
             </div>
             <div class="custom_service_menu">
                 <p><b>CUSTOM SERVICE</b></p>
@@ -124,33 +124,32 @@
     </form>
     <script type="text/javascript">
         function validateLogIn() {
-        var username = document.getElementById('<%= txtTenDangNhap.ClientID %>').value.trim();
-        var password = document.getElementById('<%= txtMatKhau.ClientID %>').value.trim();
-        var errorLabel = document.getElementById('<%= lblThongbao.ClientID %>');
+            var username = document.getElementById('<%= txtTenDangNhap.ClientID %>').value.trim();
+            var password = document.getElementById('<%= txtMatKhau.ClientID %>').value.trim();
+            var errorLabel = document.getElementById('<%= lblThongbao.ClientID %>');
 
-        errorLabel.textContent = "";
-        errorLabel.style.display = "none";
+            errorLabel.textContent = "";
+            errorLabel.style.display = "none";
 
-        var isValid = true;
-        var errorMessage = "";
+            var isValid = true;
+            var errorMessage = "";
 
-        if (username === "") {
-            errorMessage = "Please enter your username.";
-            isValid = false;
-        } else if (password === "") {
-            errorMessage = "Please enter your password.";
-            isValid = false;
+            if (username === "") {
+                errorMessage = "Please enter your username.";
+                isValid = false;
+            } else if (password === "") {
+                errorMessage = "Please enter your password.";
+                isValid = false;
+            }
+
+            if (!isValid) {
+                errorLabel.textContent = errorMessage;
+                errorLabel.style.display = "block";
+                errorLabel.style.visibility = "visible";
+            }
+
+            return isValid;
         }
-
-        if (!isValid) {
-            errorLabel.textContent = errorMessage;
-            errorLabel.style.display = "block";
-            errorLabel.style.visibility = "visible";
-        }
-
-        return isValid;
-    }
-</script>
+    </script>
 </body>
 </html>
-    
