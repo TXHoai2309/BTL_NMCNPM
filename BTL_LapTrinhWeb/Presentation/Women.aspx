@@ -137,8 +137,6 @@
                                 </div>
                             </li>
                         </ItemTemplate>
-                            </ul>
-                        </FooterTemplate>
                     </asp:Repeater>
                 </div>
             </section>
