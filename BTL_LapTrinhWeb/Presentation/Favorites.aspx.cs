@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using BTL_LapTrinhWeb.Models;
-using BTL_LapTrinhWeb.Services;
+using BTL_LapTrinhWeb.BLL;
 
 namespace BTL_LapTrinhWeb
 {
     public partial class Favorites : System.Web.UI.Page
     {
-        private FavoritesService _service = new FavoritesService();
+        private ProductManager _pm = new ProductManager();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -21,12 +22,12 @@ namespace BTL_LapTrinhWeb
             }
         }
 
-        // ================= USER =================
         private void HandleUserSession()
         {
             if (Session["UserLoggedIn"] is User user)
             {
                 lnkSignIn.Text = user.Name;
+
                 lnkSignIn.Click -= lnkSignIn_Click;
                 lnkSignIn.Click += lnkMyAccount_Click;
             }
@@ -37,7 +38,6 @@ namespace BTL_LapTrinhWeb
             return Session["Favorites"] as List<string> ?? new List<string>();
         }
 
-        // ================= LOAD =================
         private void LoadFavorites()
         {
             var favoriteIds = GetFavoriteIds();
@@ -49,7 +49,25 @@ namespace BTL_LapTrinhWeb
                 return;
             }
 
-            var data = _service.GetFavorites(favoriteIds);
+            // lấy tất cả sản phẩm từ SQL
+            List<Products> allProducts = _pm.GetAll();
+
+            // lọc theo danh sách favorite
+            List<Products> data = new List<Products>();
+
+            foreach (var item in favoriteIds)
+            {
+                var parts = item.Split('-');
+                if (parts.Length != 2) continue;
+
+                int productId;
+                if (int.TryParse(parts[1], out productId))
+                {
+                    var product = allProducts.FirstOrDefault(p => p.ProductID == productId);
+                    if (product != null)
+                        data.Add(product);
+                }
+            }
 
             pnlEmptyFavorites.Visible = false;
             rptFavorites.Visible = true;
@@ -58,27 +76,23 @@ namespace BTL_LapTrinhWeb
             rptFavorites.DataBind();
         }
 
-        // ================= PRICE =================
         public string GetPriceDisplay(object dataItem)
         {
-            decimal price = (decimal)DataBinder.Eval(dataItem, "Price");
-            int sale = (int)DataBinder.Eval(dataItem, "Sale");
+            var p = (Products)dataItem;
+            decimal finalPrice = _pm.GetFinalPrice(p);
 
-            decimal finalPrice = _service.GetFinalPrice(price, sale);
-
-            if (sale > 0)
+            if (p.SalePercent > 0)
             {
                 return $@"
                 <div class='price-container'>
-                    <span class='old-price'>${price:F2}</span>
+                    <span class='old-price'>${p.Price:F2}</span>
                     <span class='new-price'>${finalPrice:F2}</span>
                 </div>";
             }
 
-            return $"<div class='product_price'>${price:F2}</div>";
+            return $"<div class='product_price'>${p.Price:F2}</div>";
         }
 
-        // ================= REMOVE =================
         protected void btnRemoveFavorite_Click(object sender, EventArgs e)
         {
             string id = ((LinkButton)sender).CommandArgument;
@@ -91,7 +105,6 @@ namespace BTL_LapTrinhWeb
             LoadFavorites();
         }
 
-        // ================= ADD TO CART =================
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
             string uniqueId = ((Button)sender).CommandArgument;
@@ -102,7 +115,6 @@ namespace BTL_LapTrinhWeb
             Response.Redirect($"~/Presentation/Product_Detail.aspx?id={parts[1]}");
         }
 
-        // ================= NAV =================
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Presentation/LogIn.aspx");
@@ -126,6 +138,7 @@ namespace BTL_LapTrinhWeb
         }
 
         protected void search_button_Click(object sender, EventArgs e) { }
+
         protected void SUBSCRIBE_btn_Click(object sender, EventArgs e) { }
     }
 }

@@ -192,5 +192,12 @@ namespace BTL_LapTrinhWeb
 
             return $"<div class='product_price'>${price:F2}</div>";
         }
+        protected void btnBuyNow_Click(object sender, EventArgs e)
+        {
+            LinkButton btn = (LinkButton)sender;
+            string productId = btn.CommandArgument;
+
+            Response.Write("Bạn chọn sản phẩm: " + productId);
+        }
     }
 }

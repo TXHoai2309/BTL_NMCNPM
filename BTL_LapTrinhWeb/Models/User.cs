@@ -1,30 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace BTL_LapTrinhWeb.Models
 {
     public class User
     {
-        public int Id { get; set; }
-        public string Surname {  get; set; }
-        public string Name { get; set; }
+        public int UserID { get; set; }
+
+        public int Id
+        {
+            get { return UserID; }
+            set { UserID = value; }
+        }
         public string Username { get; set; }
         public string Password { get; set; }
+
+        public string Name { get; set; }
+        public string Surname { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public string QueQuan { get; set; }
-        private static int nextId = 1;
 
-        public string Address1 { set; get; }
-        public string Address2 { set; get; }
+        public string QueQuan { get; set; }
+        public string Address1 { get; set; }
+        public string Address2 { get; set; }
         public string Postal { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
-        public User() {
-            this.Id = nextId;
-            nextId++;
-        }
+
+        public DateTime? CreatedAt { get; set; }
     }
 }
