@@ -26,14 +26,12 @@ namespace BTL_LapTrinhWeb.Admin
             {
                 string gender = ddlGender.SelectedValue;
 
-                // FIX ID: Khớp chính xác với ID trong ảnh .aspx của bạn
                 string mainImg = SaveFileAndGetPath(fuImageUrl, gender);
                 string imgL = SaveFileAndGetPath(fuImageLeft, gender);
                 string imgB = SaveFileAndGetPath(fuImageBack, gender);
                 string imgT = SaveFileAndGetPath(fuImageTop, gender);
                 string imgU = SaveFileAndGetPath(fuImageUnder, gender);
 
-                // Kiểm tra dữ liệu đầu vào cơ bản
                 if (string.IsNullOrEmpty(txtName.Text) || string.IsNullOrEmpty(txtPrice.Text))
                 {
                     lblErrorMessage.Text = "Vui lòng nhập tên và giá sản phẩm.";
@@ -54,11 +52,16 @@ namespace BTL_LapTrinhWeb.Admin
                     Gender = gender,
                     Description = txtDescription.Text.Trim(),
                     SalePercent = string.IsNullOrEmpty(txtSale.Text) ? 0 : decimal.Parse(txtSale.Text),
+
+                    // 🔥 thêm 2 cái này
+                    Stock = 10,
+                    Size = "",
+
                     CreatedAt = DateTime.Now
                 };
 
-                // Lưu vào SQL Server qua Manager
-                _pm.Update(newProduct);
+                // ✅ FIX Ở ĐÂY
+                _pm.Insert(newProduct);
 
                 Response.Redirect("~/Presentation/Admin.aspx");
             }

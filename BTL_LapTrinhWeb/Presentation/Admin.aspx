@@ -103,10 +103,15 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Category">
                             <ItemTemplate>
-                                <asp:Label ID="lblCategory" runat="server" Text='<%# Bind("Category") %>'></asp:Label>
+                                <asp:Label ID="lblCategory" runat="server" Text='<%# Bind("CategoryID") %>'></asp:Label>
                             </ItemTemplate>
                             <EditItemTemplate>
-                                <asp:TextBox ID="txtCategory" runat="server" Text='<%# Bind("Category") %>' CssClass="edit-textbox"></asp:TextBox>
+                                <asp:DropDownList ID="ddlCategoryEdit" runat="server">
+                                    <asp:ListItem Text="Sneakers" Value="1" />
+                                    <asp:ListItem Text="Lifestyles/Casual" Value="2" />
+                                    <asp:ListItem Text="Sports" Value="3" />
+                                    <asp:ListItem Text="Boots" Value="4" />
+                                </asp:DropDownList>
                             </EditItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Gender">

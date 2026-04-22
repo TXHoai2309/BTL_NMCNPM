@@ -105,5 +105,9 @@ namespace BTL_LapTrinhWeb.BLL
                 .Where(p => p.ProductName.ToLower().Contains(keyword.ToLower()))
                 .ToList();
         }
+        public void Insert(Products p)
+        {
+            repo.InsertProduct(p);
+        }
     }
 }

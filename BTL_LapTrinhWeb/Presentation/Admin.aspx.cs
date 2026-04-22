@@ -70,13 +70,11 @@ namespace BTL_LapTrinhWeb.Admin
             GridViewRow row = gvProducts.Rows[e.RowIndex];
             int id = Convert.ToInt32(gvProducts.DataKeys[e.RowIndex].Value);
 
-            // Tìm sản phẩm hiện tại trong SQL để giữ lại các thông tin không sửa (như Image)
             Products p = _pm.GetByID(id);
 
             if (p != null)
             {
                 p.ProductName = (row.FindControl("txtName") as TextBox).Text;
-                p.Gender = (row.FindControl("ddlGenderEdit") as DropDownList).SelectedValue;
                 p.Description = (row.FindControl("txtDescription") as TextBox).Text;
 
                 decimal.TryParse((row.FindControl("txtPrice") as TextBox).Text, out decimal price);
@@ -85,7 +83,20 @@ namespace BTL_LapTrinhWeb.Admin
                 p.Price = price;
                 p.SalePercent = sale;
 
-                // Cập nhật xuống SQL Server
+                // 🔥 FIX CATEGORY
+                DropDownList ddl = row.FindControl("ddlCategoryEdit") as DropDownList;
+                if (ddl != null)
+                {
+                    p.CategoryID = int.Parse(ddl.SelectedValue);
+                }
+
+                // 🔥 FIX GENDER
+                DropDownList ddlGender = row.FindControl("ddlGenderEdit") as DropDownList;
+                if (ddlGender != null)
+                {
+                    p.Gender = ddlGender.SelectedValue;
+                }
+
                 _pm.Update(p);
             }
 
@@ -109,6 +120,10 @@ namespace BTL_LapTrinhWeb.Admin
             if (description == null) return "";
             string text = description.ToString();
             return text.Length > maxLength ? text.Substring(0, maxLength) + "..." : text;
+        }
+        protected void btnBackToLogin_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("LogIn.aspx");
         }
     }
 }
