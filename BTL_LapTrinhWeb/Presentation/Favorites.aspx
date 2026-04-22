@@ -78,8 +78,8 @@
                                 </div>
                             </div>
                             <div class="favorite_actions">
-                                <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CssClass="btn btn-add-to-cart" OnClick="btnAddToCart_Click" CommandArgument='<%# Eval("uniqueId") %>' />
-                                <asp:LinkButton ID="btnRemove" runat="server" Text="Remove" CssClass="btn btn-remove" OnClick="btnRemoveFavorite_Click" CommandArgument='<%# Eval("uniqueId") %>' />
+                                <asp:Button ID="btnAddToCart" runat="server" Text="Add to Cart" CssClass="btn btn-add-to-cart" OnClick="btnAddToCart_Click" CommandArgument='<%# Eval("ProductID") %>' />
+                                <asp:LinkButton ID="btnRemove" runat="server" Text="Remove" CssClass="btn btn-remove" OnClick="btnRemoveFavorite_Click" CommandArgument='<%# Eval("ProductID") %>' />
                             </div>
                         </div>
                     </li>
