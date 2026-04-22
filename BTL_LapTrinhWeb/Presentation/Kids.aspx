@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Kids.aspx.cs" Inherits="BTL_LapTrinhWeb.Kids" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Kids.aspx.cs" Inherits="BTL_LapTrinhWeb.Kids" EnableEventValidation="false"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -115,9 +115,10 @@
                                                 AlternateText='<%# Eval("ProductName") %>' />
                                         </asp:HyperLink>
 
-                                        <asp:ImageButton runat="server" CssClass="favorite_icon"
-                                            CommandArgument='<%# Eval("ProductID") %>' OnClick="btnAddToFavorites_Click"
-                                            ImageUrl='<%# IsFavorite(Eval("ProductID").ToString(), "Men") ? "~/Assets/images/Chung/icon_favorite_green.png" : "~/Assets/images/Chung/icon_favorite.png" %>' />
+                                        <asp:ImageButton runat="server" ID="btnFavorite" CssClass="favorite_icon"
+                                            CommandArgument='<%# Eval("ProductID") %>' 
+                                            OnClick="btnAddToFavorites_Click"
+                                            ImageUrl='<%# IsFavorite(Eval("ProductID").ToString()) ? "~/Assets/images/Chung/icon_favorite_green.png" : "~/Assets/images/Chung/icon_favorite.png" %>' />
 
                                         <asp:LinkButton runat="server" CssClass="buy_now"
                                             Text="Buy Now"
