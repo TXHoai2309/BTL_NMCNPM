@@ -44,7 +44,7 @@ namespace BTL_LapTrinhWeb
             product_name.InnerText = product.ProductName;
             product_description.InnerText = product.Description;
 
-            decimal finalPrice = _pm.GetDiscountPrice(product);
+            decimal finalPrice = _pm.GetFinalPrice(product);
 
             if (product.SalePercent > 0)
             {
