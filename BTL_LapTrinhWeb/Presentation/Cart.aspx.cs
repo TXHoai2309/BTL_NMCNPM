@@ -3,6 +3,7 @@ using BTL_LapTrinhWeb.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace BTL_LapTrinhWeb
@@ -83,5 +84,17 @@ namespace BTL_LapTrinhWeb
                 }
             }
         }
+        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e)
+        {
+        }
+        protected void btnSecureCheckout_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Presentation/Checkout.aspx");
+        }
+        protected void btnContinueShopping_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Presentation/Trangchu.aspx");
+        }
+        protected void search_button_Click(object sender, ImageClickEventArgs e) { }
     }
 }
