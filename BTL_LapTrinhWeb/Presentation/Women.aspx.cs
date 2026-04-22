@@ -23,6 +23,15 @@ namespace BTL_LapTrinhWeb
             {
                 LoadProducts();
             }
+            if (Session["UserLoggedIn"] != null)
+            {
+                User loggedInUser = (User)Session["UserLoggedIn"];
+                lnkSignIn.Text = loggedInUser.Username;
+            }
+            else
+            {
+                lnkSignIn.Text = "Sign In";
+            }
         }
 
         private void LoadProducts()

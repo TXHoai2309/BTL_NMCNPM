@@ -24,6 +24,17 @@ namespace BTL_LapTrinhWeb
                 CurrentCategory = "All";
             }
 
+            // Thêm vào đây
+            if (Session["UserLoggedIn"] != null)
+            {
+                User loggedInUser = (User)Session["UserLoggedIn"];
+                lnkSignIn.Text = loggedInUser.Username;
+            }
+            else
+            {
+                lnkSignIn.Text = "Sign In";
+            }
+
             LoadProducts();
         }
         private void LoadProducts()
