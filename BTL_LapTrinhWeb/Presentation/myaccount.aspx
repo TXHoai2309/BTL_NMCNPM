@@ -69,7 +69,41 @@
             <%--Update information--%>
             <div id="updateInfor" runat="server" class="tab-content">
                 <h3>Delivery</h3>
-
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="txtEmail" class="form-label">Email</label>
+                        <asp:Label ID="lblEmail" runat="server" CssClass="Error" />
+                    </div>
+                    <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" />
+                </div>
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="txtPhone" class="form-label">Phone Number</label>
+                        <asp:Label ID="lblPhone" runat="server" CssClass="Error" />
+                    </div>
+                    <asp:TextBox ID="txtPhone" runat="server" CssClass="form-control" />
+                </div>
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="txtSurname" class="form-label">Surname</label>
+                        <asp:Label ID="lblSurname" runat="server" CssClass="Error" />
+                    </div>
+                    <asp:TextBox ID="txtSurname" runat="server" CssClass="form-control" />
+                </div>
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="txtName" class="form-label">Name</label>
+                        <asp:Label ID="lblName" runat="server" CssClass="Error" />
+                    </div>
+                    <asp:TextBox ID="txtName" runat="server" CssClass="form-control" />
+                </div>
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="txtQuequan" class="form-label">Que Quan</label>
+                        <asp:Label ID="lblQueQuan" runat="server" CssClass="Error" />
+                    </div>
+                    <asp:TextBox ID="txtQueQuan" runat="server" CssClass="form-control" />
+                </div>
                 <div class="form-group">
                     <div class="label-row">
                         <label for="txtAddress1" class="form-label">Street Address Line 1</label>
@@ -170,56 +204,9 @@
             </div>
         </footer>
     </form>
-    <script type="text/javascript">
-        function validateForm() {
-            var address1 = document.getElementById('<%= txtAddress1.ClientID %>').value.trim();
-            var address2 = document.getElementById('<%= txtAddress2.ClientID %>').value.trim();
-            var postal = document.getElementById('<%= txtPostal.ClientID %>').value.trim();
-            var city = document.getElementById('<%= txtCity.ClientID %>').value.trim();
-            var country = document.getElementById('<%= txtCountry.ClientID %>').value.trim();
-
-
-            var lblAddress1Error = document.getElementById('<%= lblAddress1Error.ClientID %>');
-            var lblAddress2Error = document.getElementById('<%= lblAddress2Error.ClientID %>');
-            var lblPostalError = document.getElementById('<%= lblPostalError.ClientID %>');
-            var lblCityError = document.getElementById('<%= lblCityError.ClientID %>');
-            var lblCountryError = document.getElementById('<%= lblCountryError.ClientID %>');
-
-            lblAddress1Error.textContent = "";
-            lblAddress2Error.textContent = "";
-            lblPostalError.textContent = "";
-            lblCityError.textContent = "";
-            lblCountryError.textContent = "";
-
-            var isValid = true;
-
-
-            if (address1 === "") {
-                lblAddress1Error.textContent = "Please enter Address Line 1.";
-                isValid = false;
-            }
-            if (address2 === "") {
-                lblAddress2Error.textContent = "Please enter Address Line 2.";
-                isValid = false;
-            }
-            if (postal === "") {
-                lblPostalError.textContent = "Please enter Postal Code.";
-                isValid = false;
-            }
-            if (city === "") {
-                lblCityError.textContent = "Please enter City.";
-                isValid = false;
-            }
-            if (country === "") {
-                lblCountryError.textContent = "Please enter Country.";
-                isValid = false;
-            }
-
-
-            return isValid;
-
-        }
-    </script>
+    <script>
+        window.history.forward();
+</script>
 </body>
 </html>
 

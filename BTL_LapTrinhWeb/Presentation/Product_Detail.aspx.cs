@@ -17,7 +17,19 @@ namespace BTL_LapTrinhWeb
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack) { LoadProduct(); }
+            if (Session["UserLoggedIn"] is User loggedInUser)
+            {
+                lnkSignIn.Text = !string.IsNullOrEmpty(loggedInUser.Name) ? loggedInUser.Name : loggedInUser.Username;
+            }
+            else
+            {
+                lnkSignIn.Text = "Sign In";
+            }
+
+            if (!IsPostBack)
+            {
+                LoadProduct();
+            }
         }
 
         private void LoadProduct()
@@ -98,7 +110,19 @@ namespace BTL_LapTrinhWeb
         }
 
         // Navigation
-        protected void lnkSignIn_Click(object sender, EventArgs e) => Response.Redirect("~/Presentation/LogIn.aspx");
+        protected void lnkSignIn_Click(object sender, EventArgs e)
+        {
+
+            if (Session["UserLoggedIn"] != null)
+            {
+                Response.Redirect("~/Presentation/MyAccount.aspx");
+            }
+            else
+            {
+                // Nếu chưa, chuyển đến Log In
+                Response.Redirect("~/Presentation/LogIn.aspx");
+            }
+        }
         protected void lnkFavorites_Click(object sender, EventArgs e) => Response.Redirect("~/Presentation/Favorites.aspx");
         protected void lnkCart_Click(object sender, EventArgs e) => Response.Redirect("~/Presentation/Cart.aspx");
         protected void search_button_Click(object sender, ImageClickEventArgs e) => Response.Redirect($"~/Presentation/Men.aspx?search={Server.UrlEncode(search_box.Text)}");

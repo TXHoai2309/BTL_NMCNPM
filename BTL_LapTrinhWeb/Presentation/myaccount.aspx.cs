@@ -1,7 +1,8 @@
-﻿using BTL_LapTrinhWeb.Models;
-using BTL_LapTrinhWeb.BLL;
+﻿using BTL_LapTrinhWeb.BLL;
+using BTL_LapTrinhWeb.Models;
 using System;
 using System.Linq;
+using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -13,13 +14,20 @@ namespace BTL_LapTrinhWeb
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
+            Response.Cache.SetExpires(DateTime.UtcNow.AddMinutes(-1));
+            Response.Cache.SetRevalidation(HttpCacheRevalidation.AllCaches);
             if (Session["UserLoggedIn"] is User user)
             {
                 lblUserName.Text = user.Name;
-                lnkSignIn.Text = user.Name;
-
-                lnkSignIn.Click -= lnkSignIn_Click;
-                lnkSignIn.Click += lnkMyAccount_Click;
+                // Hiển thị tên người dùng thay cho chữ "Sign in"
+                lnkSignIn.Text = !string.IsNullOrEmpty(user.Name) ? user.Name : user.Username;
+            }
+            else
+            {
+                // Nếu chưa đăng nhập mà vào trang này, nên đẩy về trang Login
+                Response.Redirect("~/Presentation/LogIn.aspx");
             }
 
             if (!IsPostBack && Session["UserLoggedIn"] is User u)
@@ -31,34 +39,55 @@ namespace BTL_LapTrinhWeb
         private void LoadUser(int id)
         {
             var user = _um.GetUserByID(id);
-            if (user == null) return;
 
-            txtAddress1.Text = user.Address1;
-            txtAddress2.Text = user.Address2;
-            txtPostal.Text = user.Postal;
-            txtCity.Text = user.City;
-            txtCountry.Text = user.Country;
+            if (user != null)
+            {
+                txtSurname.Text = user.Surname;
+                txtName.Text = user.Name;
+                txtEmail.Text = user.Email;
+                txtPhone.Text = user.Phone;
+                txtQueQuan.Text = user.QueQuan;
+
+                txtAddress1.Text = user.Address1;
+                txtAddress2.Text = user.Address2;
+                txtPostal.Text = user.Postal;
+                txtCity.Text = user.City;
+                txtCountry.Text = user.Country;
+            }
         }
 
         protected void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (!(Session["UserLoggedIn"] is User user)) return;
+            if (Session["UserLoggedIn"] is User currentUser)
+            {
+                var userToUpdate = _um.GetUserByID(currentUser.Id);
 
-            var existing = _um.GetUserByID(user.Id);
-            if (existing == null) return;
+                if (userToUpdate != null)
+                {
+                    userToUpdate.Email = txtEmail.Text.Trim();
+                    userToUpdate.Phone = txtPhone.Text.Trim();
+                    userToUpdate.Surname = txtSurname.Text.Trim();
+                    userToUpdate.Name = txtName.Text.Trim();
+                    userToUpdate.QueQuan = txtQueQuan.Text.Trim();
+                    userToUpdate.Address1 = txtAddress1.Text.Trim();
+                    userToUpdate.Address2 = txtAddress2.Text.Trim();
+                    userToUpdate.Postal = txtPostal.Text.Trim();
+                    userToUpdate.City = txtCity.Text.Trim();
+                    userToUpdate.Country = txtCountry.Text.Trim();
 
-            existing.Address1 = txtAddress1.Text.Trim();
-            existing.Address2 = txtAddress2.Text.Trim();
-            existing.Postal = txtPostal.Text.Trim();
-            existing.City = txtCity.Text.Trim();
-            existing.Country = txtCountry.Text.Trim();
+                    try
+                    {
+                        _um.UpdateUser(userToUpdate);
 
-            _um.UpdateUser(existing);
+                        Session["UserLoggedIn"] = userToUpdate;
 
-            Session["UserLoggedIn"] = _um.GetUserByID(user.Id);
-
-            lblUpdateMessage.Text = "Update successful!";
-            lblUpdateMessage.Visible = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Response.Write("Lỗi: " + ex.Message);
+                    }
+                }
+            }
         }
 
         private void LoadOrderHistory()
@@ -76,12 +105,11 @@ namespace BTL_LapTrinhWeb
 
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Presentation/LogIn.aspx");
-        }
-
-        protected void lnkMyAccount_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("~/Presentation/MyAccount.aspx");
+            // Nếu click vào tên mình khi đã đăng nhập, chuyển hướng lại chính trang này
+            if (Session["UserLoggedIn"] != null)
+                Response.Redirect("~/Presentation/MyAccount.aspx");
+            else
+                Response.Redirect("~/Presentation/LogIn.aspx");
         }
 
         protected void lnkFavorites_Click(object sender, EventArgs e)
@@ -123,7 +151,14 @@ namespace BTL_LapTrinhWeb
         protected void btnLogout_Click(object sender, EventArgs e)
         {
             Session.Clear();
-            Response.Redirect("~/Presentation/Trangchu.aspx");
+            Session.Abandon();
+
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
+            Response.Cache.SetExpires(DateTime.UtcNow.AddMinutes(-1));
+
+            Response.Redirect("~/Presentation/LogIn.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
         }
 
         protected void SUBSCRIBE_btn_Click(object sender, EventArgs e)
