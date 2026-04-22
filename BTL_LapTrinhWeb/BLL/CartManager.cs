@@ -1,34 +1,35 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using BTL_LapTrinhWeb.Models;
 using BTL_LapTrinhWeb.DAL;
+using BTL_LapTrinhWeb.Models;
 
 namespace BTL_LapTrinhWeb.BLL
 {
     public class CartManager
     {
-        private CartRepository _repo = new CartRepository();
+        private CartRepository repo = new CartRepository();
 
-        public List<CartItem> GetCart()
+        public void Add(int userId, int productId, int size, int quantity)
         {
-            return _repo.GetCart();
+            repo.AddToCart(userId, productId, size, quantity);
         }
 
-        public void RemoveItem(string productNumber)
+        public List<CartItem> GetCart(int userId)
         {
-            var cart = _repo.GetCart();
-
-            var item = cart.FirstOrDefault(c => c.ProductNumber == productNumber);
-            if (item != null)
-            {
-                cart.Remove(item);
-                _repo.SaveCart(cart);
-            }
+            return repo.GetCart(userId);
         }
 
-        public decimal GetTotal(List<CartItem> cart)
+        public void Update(int cartId, int quantity)
         {
-            return cart.Sum(i => i.LineTotal);
+            repo.UpdateCart(cartId, quantity);
+        }
+
+        public void Delete(int cartId)
+        {
+            repo.DeleteCart(cartId);
+        }
+        public void DeleteByProduct(int userId, int productId)
+        {
+            repo.DeleteByProduct(userId, productId);
         }
     }
 }

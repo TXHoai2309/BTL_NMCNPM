@@ -1,318 +1,155 @@
-﻿using BTL_LapTrinhWeb.Models;
-using BTL_LapTrinhWeb.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.UI;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
+using System.Web.UI.HtmlControls;
+using BTL_LapTrinhWeb.Models;
+using BTL_LapTrinhWeb.BLL;
 
 namespace BTL_LapTrinhWeb
 {
     public partial class Product_Detail : System.Web.UI.Page
     {
-        private ProductDetailService _service = new ProductDetailService();
-        private Products currentProduct;
+        private ProductManager _pm = new ProductManager();
+        private CartManager _cart = new CartManager();
+        private ProductDetailManager _pdm = new ProductDetailManager();
 
-        // ================= PAGE LOAD =================
+        private int ProductID
+        {
+            get
+            {
+                int id;
+                return int.TryParse(Request.QueryString["id"], out id) ? id : 0;
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            HandleUserSession();
-
-            int id = GetProductId();
-            currentProduct = _service.GetProduct(id);
-
-            if (currentProduct == null)
+            if (!IsPostBack)
             {
-                product_name.InnerText = "Product not found";
+                LoadProduct();
+            }
+        }
+
+        private void LoadProduct()
+        {
+            var product = _pm.GetByID(ProductID);
+
+            if (product == null)
+            {
+                Response.Redirect("~/Presentation/Trangchu.aspx");
                 return;
             }
 
-            if (!IsPostBack)
+            product_name.InnerText = product.ProductName;
+            product_description.InnerText = product.Description;
+
+            decimal finalPrice = _pm.GetDiscountPrice(product);
+
+            if (product.SalePercent > 0)
             {
-                LoadProductInfo();
-                LoadSimilarProducts();
-                LoadReviews();
-                CheckUserPermission();
-            }
-
-            UpdateFavoriteIcon();
-        }
-
-        // ================= HELPER =================
-        private void HandleUserSession()
-        {
-            if (Session["UserLoggedIn"] is User user)
-            {
-                lnkSignIn.Text = user.Name;
-                lnkSignIn.Click -= lnkSignIn_Click;
-                lnkSignIn.Click += lnkMyAccount_Click;
-            }
-        }
-
-        private int GetProductId()
-        {
-            int.TryParse(Request.QueryString["id"], out int id);
-            return id;
-        }
-
-        // ================= PRODUCT =================
-        private void LoadProductInfo()
-        {
-            product_name.InnerText = currentProduct.Name;
-            product_description.InnerText = currentProduct.Description;
-
-            decimal price = _service.GetDisplayPrice(currentProduct);
-
-            if (currentProduct.Sale > 0)
-            {
-                product_sale_percent.InnerText = $"-{currentProduct.Sale}%";
-                product_sale_percent.Visible = true;
-
-                product_price.InnerHtml = $@"
-                <div class='price-container'>
-                    <span class='old-price'>${currentProduct.Price:F2}</span>
-                    <span class='new-price'>${price:F2}</span>
-                </div>";
+                product_price.InnerHtml =
+                    $"<span class='old-price'>${product.Price:F2}</span> " +
+                    $"<span class='new-price'>${finalPrice:F2}</span>";
             }
             else
             {
-                product_price.InnerHtml = $"<span class='new-price'>${price:F2}</span>";
+                product_price.InnerText = $"${product.Price:F2}";
             }
 
-            main_image.Src = ResolveUrl(currentProduct.ImageUrl);
+            main_image.Src = ResolveUrl(product.Image ?? "~/Assets/images/no-image.png");
 
-            SetThumbnail(imgThumbnailMain, currentProduct.ImageUrl, true);
-            SetThumbnail(imgThumbnailBack, currentProduct.ImageBack);
-            SetThumbnail(imgThumbnailLeft, currentProduct.ImageLeft);
-            SetThumbnail(imgThumbnailTop, currentProduct.ImageTop);
-            SetThumbnail(imgThumbnailUnder, currentProduct.ImageUnder);
+            imgThumbnailMain.Src = ResolveUrl(product.Image ?? "~/Assets/images/no-image.png");
+            imgThumbnailBack.Src = ResolveUrl(product.Image1 ?? product.Image);
+            imgThumbnailLeft.Src = ResolveUrl(product.Image2 ?? product.Image);
+            imgThumbnailTop.Src = ResolveUrl(product.Image3 ?? product.Image);
+            imgThumbnailUnder.Src = ResolveUrl(product.Image4 ?? product.Image);
 
-            string page = currentProduct.Gender == "Men" ? "Men.aspx" :
-                          currentProduct.Gender == "Women" ? "Women.aspx" : "Kids.aspx";
+            btnAddToBag.CommandArgument = product.ProductID.ToString();
+            btnBuyAndCheckOut.CommandArgument = product.ProductID.ToString();
 
-            litBreadcrumb.Text = $@"
-            <a href='{ResolveUrl("~/Presentation/Trangchu.aspx")}'>Home</a> >
-            <a href='{ResolveUrl("~/Presentation/" + page)}'>{currentProduct.Gender}</a> >
-            <span>{currentProduct.Name}</span>";
+            LoadSimilarProducts(product);
         }
 
-        private void SetThumbnail(HtmlImage img, string url, bool active = false)
+        private void LoadSimilarProducts(Products product)
         {
-            if (string.IsNullOrEmpty(url))
-            {
-                img.Visible = false;
-                return;
-            }
+            var similar = _pdm.GetSimilarProducts(product);
 
-            img.Src = ResolveUrl(url);
-            img.Visible = true;
-            img.Attributes["class"] = active ? "thumbnail_image active-thumbnail" : "thumbnail_image";
-        }
-
-        // ================= SIMILAR =================
-        private void LoadSimilarProducts()
-        {
-            var similar = _service.GetSimilarProducts(currentProduct);
             rptSimilarProducts.DataSource = similar;
             rptSimilarProducts.DataBind();
         }
 
-        // ================= FAVORITE =================
-        private void UpdateFavoriteIcon()
+        protected void btnAddToCart_Click(object sender, EventArgs e)
         {
-            bool isFav = IsFavorite(currentProduct.ProductID.ToString(), currentProduct.Gender);
+            if (!(Session["UserLoggedIn"] is User user))
+            {
+                Response.Redirect("~/Presentation/LogIn.aspx");
+                return;
+            }
 
-            btnFavoriteIcon.ImageUrl = isFav
-                ? "~/Assets/images/Chung/icon_favorite_green.png"
-                : "~/Assets/images/Chung/icon_favorite.png";
+            int productId = int.Parse(((Button)sender).CommandArgument);
 
-            btnFavoriteIcon.CommandArgument = currentProduct.ProductID.ToString();
+            _cart.Add(user.Id, productId, 0, 1);
+
+            Response.Redirect("~/Presentation/Cart.aspx");
         }
 
-        protected void btnAddToFavorites_Click(object sender, EventArgs e)
+        protected void btnFavorite_Click(object sender, EventArgs e)
         {
-            string id = ((ImageButton)sender).CommandArgument;
-            string key = $"{currentProduct.Gender}-{id}";
+            string productId = ((Button)sender).CommandArgument;
 
             var favorites = Session["Favorites"] as List<string> ?? new List<string>();
-            favorites = _service.ToggleFavorite(favorites, key);
+
+            string key = $"Product-{productId}";
+
+            if (favorites.Contains(key))
+                favorites.Remove(key);
+            else
+                favorites.Add(key);
 
             Session["Favorites"] = favorites;
-
-            Response.Redirect(Request.RawUrl);
         }
 
-        public bool IsFavorite(string id, string category)
+        public bool IsFavorite(string productId)
         {
-            var favorites = Session["Favorites"] as List<string>;
-            return favorites != null && favorites.Contains($"{category}-{id}");
+            var favorites = Session["Favorites"] as List<string> ?? new List<string>();
+            return favorites.Contains($"Product-{productId}");
         }
 
-        // ================= CART =================
-        protected void AddToBag_Click(object sender, EventArgs e)
+        public string GetPriceDisplay(object dataItem)
         {
-            HandleAddToCart(false);
-        }
+            decimal price = (decimal)DataBinder.Eval(dataItem, "Price");
+            decimal sale = DataBinder.Eval(dataItem, "SalePercent") != DBNull.Value
+                ? Convert.ToDecimal(DataBinder.Eval(dataItem, "SalePercent"))
+                : 0;
 
-        protected void BuyAndCheckOut_Click(object sender, EventArgs e)
-        {
-            if (HandleAddToCart(true))
-                Response.Redirect("~/Presentation/Checkout.aspx");
-        }
+            decimal finalPrice = sale > 0
+                ? price * (1 - sale / 100)
+                : price;
 
-        private bool HandleAddToCart(bool redirect)
-        {
-            if (Session["UserLoggedIn"] == null)
+            if (sale > 0)
             {
-                lblAddToBagMessage.Text = "Please log in!";
-                lblAddToBagMessage.Visible = true;
-                return false;
+                return $@"
+                <span class='old-price'>${price:F2}</span>
+                <span class='new-price'>${finalPrice:F2}</span>";
             }
 
-            if (string.IsNullOrEmpty(ddlSize.SelectedValue))
-            {
-                lblSizeError.Text = "Select size!";
-                return false;
-            }
-
-            if (!int.TryParse(txtQuantity.Text, out int quantity) || quantity <= 0)
-            {
-                lblQuantityError.Text = "Invalid quantity!";
-                return false;
-            }
-
-            int size = int.Parse(ddlSize.SelectedValue);
-
-            var cart = Session["ShoppingCart"] as List<CartItem> ?? new List<CartItem>();
-
-            cart = _service.AddToCart(cart, currentProduct, size, quantity);
-
-            Session["ShoppingCart"] = cart;
-
-            lblAddToBagMessage.Text = "Added!";
-            lblAddToBagMessage.Visible = true;
-
-            return true;
+            return $"${price:F2}";
         }
 
-        // ================= REVIEW =================
-        private void LoadReviews()
-        {
-            var user = Session["UserLoggedIn"] as User;
-            var reviews = _service.GetReviews(currentProduct.ProductID, user?.Username);
-
-            rptReviews.DataSource = reviews;
-            rptReviews.DataBind();
-        }
-
-        private void CheckUserPermission()
-        {
-            var user = Session["UserLoggedIn"] as User;
-
-            pnlAddReview.Visible = _service.UserHasBoughtProduct(user, currentProduct.ProductID);
-            lblNoReview.Visible = !pnlAddReview.Visible;
-        }
-
-        // ================= NAVIGATION =================
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Presentation/LogIn.aspx");
         }
 
-        protected void lnkMyAccount_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("~/Presentation/MyAccount.aspx");
-        }
-
         protected void lnkFavorites_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Session["UserLoggedIn"] != null
-                ? "~/Presentation/Favorites.aspx"
-                : "~/Presentation/LogIn.aspx");
+            Response.Redirect("~/Presentation/Favorites.aspx");
         }
 
         protected void lnkCart_Click(object sender, EventArgs e)
         {
-            Response.Redirect(Session["UserLoggedIn"] != null
-                ? "~/Presentation/Cart.aspx"
-                : "~/Presentation/LogIn.aspx");
-        }
-        protected void search_button_Click(object sender, ImageClickEventArgs e)
-        {
-            string keyword = search_box.Text.Trim().ToLower();
-
-            if (string.IsNullOrEmpty(keyword)) return;
-
-            switch (keyword)
-            {
-                case "men":
-                    Response.Redirect("~/Presentation/Men.aspx");
-                    break;
-                case "women":
-                    Response.Redirect("~/Presentation/Women.aspx");
-                    break;
-                case "kids":
-                    Response.Redirect("~/Presentation/Kids.aspx");
-                    break;
-                case "sale":
-                    Response.Redirect("~/Presentation/Sale.aspx");
-                    break;
-                default:
-                    Response.Redirect("~/Presentation/Trangchu.aspx?search=" + keyword);
-                    break;
-            }
-        }
-        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e)
-        {
-            string email = email_input.Text.Trim();
-
-            if (string.IsNullOrEmpty(email))
-            {
-                // bạn có thể thêm label nếu muốn
-                return;
-            }
-
-            // lưu tạm vào Application (demo)
-            var list = Application["Subscribers"] as List<string> ?? new List<string>();
-
-            if (!list.Contains(email))
-            {
-                list.Add(email);
-            }
-
-            Application["Subscribers"] = list;
-
-            // feedback đơn giản
-            email_input.Text = "";
-        }
-        public string GetPriceDisplay(object dataItem)
-        {
-            var p = (Products)dataItem;
-            decimal price = _service.GetDisplayPrice(p);
-
-            if (p.Sale > 0)
-            {
-                return $@"
-        <div class='price-container'>
-            <span class='old-price'>${p.Price:F2}</span>
-            <span class='new-price'>${price:F2}</span>
-        </div>";
-            }
-
-            return $"<div class='product_price'>${price:F2}</div>";
-        }
-        protected void btnSubmitReview_Click(object sender, EventArgs e)
-        {
-            // code của bạn
-        }
-        protected void btnCancelEdit_Click(object sender, EventArgs e)
-        {
-            // TODO: xử lý sau
-        }
-        protected void rptReviews_ItemCommand(object source, RepeaterCommandEventArgs e)
-        {
-            // TODO: xử lý sau
+            Response.Redirect("~/Presentation/Cart.aspx");
         }
     }
 }

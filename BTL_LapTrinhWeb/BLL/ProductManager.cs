@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BTL_LapTrinhWeb.Models;
 using BTL_LapTrinhWeb.DAL;
@@ -8,7 +7,7 @@ namespace BTL_LapTrinhWeb.BLL
 {
     public class ProductManager
     {
-        private ProductRepository _repo = new ProductRepository();
+        private ProductRepository repo = new ProductRepository();
 
         public List<Products> GetProducts(
             string gender,
@@ -18,128 +17,93 @@ namespace BTL_LapTrinhWeb.BLL
             string priceFilter,
             string sortOption)
         {
-            var products = _repo.GetAllProducts().AsEnumerable();
+            var data = repo.GetAllProducts();
 
+            // ===== Gender =====
             if (!string.IsNullOrEmpty(gender))
-            {
-                products = products.Where(p =>
-                    p.Gender.Equals(gender, StringComparison.OrdinalIgnoreCase));
-            }
+                data = data.Where(p => p.Gender == gender).ToList();
 
+            // ===== Sale =====
             if (isSale)
-            {
-                products = products.Where(p => p.Sale > 0);
-            }
+                data = data.Where(p => p.Sale > 0).ToList();
 
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                string term = searchTerm.ToLower();
-                products = products.Where(p =>
-                    p.Name.ToLower().Contains(term) ||
-                    p.Category.ToLower().Contains(term) ||
-                    p.Gender.ToLower().Contains(term));
-            }
-
+            // ===== Category (FIX CHÍNH) =====
             if (!string.IsNullOrEmpty(category) && category != "All")
             {
-                products = products.Where(p => p.Category == category);
+                int categoryId = 0;
+
+                if (category == "Sneakers") categoryId = 1;
+                else if (category == "Lifestyles/Casual") categoryId = 2;
+                else if (category == "Sports") categoryId = 3;
+                else if (category == "Boots") categoryId = 4;
+
+                data = data.Where(p => p.CategoryID == categoryId).ToList();
             }
 
-            switch (priceFilter)
-            {
-                case "lt100":
-                    products = products.Where(p => p.Price < 100);
-                    break;
+            // ===== Search =====
+            if (!string.IsNullOrEmpty(searchTerm))
+                data = data.Where(p => p.ProductName.ToLower().Contains(searchTerm.ToLower())).ToList();
 
-                case "100_500":
-                    products = products.Where(p => p.Price >= 100 && p.Price <= 500);
-                    break;
+            // ===== Price Filter =====
+            if (priceFilter == "lt100")
+                data = data.Where(p => p.Price < 100).ToList();
+            else if (priceFilter == "100_500")
+                data = data.Where(p => p.Price >= 100 && p.Price <= 500).ToList();
+            else if (priceFilter == "gt500")
+                data = data.Where(p => p.Price > 500).ToList();
 
-                case "gt500":
-                    products = products.Where(p => p.Price > 500);
-                    break;
-            }
-
+            // ===== Sort =====
             switch (sortOption)
             {
                 case "name_asc":
-                    products = products.OrderBy(p => p.Name);
+                    data = data.OrderBy(p => p.ProductName).ToList();
                     break;
-
                 case "name_desc":
-                    products = products.OrderByDescending(p => p.Name);
+                    data = data.OrderByDescending(p => p.ProductName).ToList();
                     break;
-
                 case "price_asc":
-                    products = products.OrderBy(p => p.Price);
+                    data = data.OrderBy(p => p.Price).ToList();
                     break;
-
                 case "price_desc":
-                    products = products.OrderByDescending(p => p.Price);
+                    data = data.OrderByDescending(p => p.Price).ToList();
                     break;
             }
 
-            return products.ToList();
+            return data;
         }
 
-        public List<Products> Search(string keyword)
+        public decimal GetFinalPrice(Products p)
         {
-            var products = _repo.GetAllProducts();
+            if (p.SalePercent > 0)
+                return p.Price * (1 - p.SalePercent / 100);
 
-            if (string.IsNullOrEmpty(keyword))
-                return products;
-
-            keyword = keyword.ToLower();
-
-            return products.Where(p =>
-                p.Name.ToLower().Contains(keyword) ||
-                p.Category.ToLower().Contains(keyword) ||
-                p.Gender.ToLower().Contains(keyword)
-            ).ToList();
+            return p.Price;
         }
 
-        public void Update(Products updated)
+        public List<Products> GetAll()
         {
-            var products = _repo.GetAllProducts();
+            return repo.GetAllProducts();
+        }
+        public Products GetByID(int id)
+        {
+            return repo.GetProductByID(id);
+        }
 
-            var p = products.FirstOrDefault(x => x.ProductID == updated.ProductID);
-            if (p == null) return;
-
-            p.Name = updated.Name;
-            p.Price = updated.Price;
-            p.Category = updated.Category;
-            p.Gender = updated.Gender;
-            p.Description = updated.Description;
-            p.Sale = updated.Sale;
-            p.ImageUrl = updated.ImageUrl;
-
-            _repo.Save(products);
+        public void Update(Products p)
+        {
+            repo.UpdateProduct(p);
         }
 
         public void Delete(int id)
         {
-            var products = _repo.GetAllProducts();
-            products.RemoveAll(p => p.ProductID == id);
-            _repo.Save(products);
+            repo.DeleteProduct(id);
         }
 
-        public string Truncate(string text, int maxLength)
+        public List<Products> Search(string keyword)
         {
-            if (string.IsNullOrEmpty(text)) return "";
-
-            return text.Length <= maxLength
-                ? text
-                : text.Substring(0, maxLength) + "...";
-        }
-
-        public decimal GetDiscountPrice(Products p)
-        {
-            if (p.Sale > 0)
-            {
-                return p.Price * (1 - (decimal)p.Sale / 100);
-            }
-
-            return p.Price;
+            return repo.GetAllProducts()
+                .Where(p => p.ProductName.ToLower().Contains(keyword.ToLower()))
+                .ToList();
         }
     }
 }
