@@ -1,7 +1,6 @@
 ﻿using BTL_LapTrinhWeb.Models;
-using BTL_LapTrinhWeb.Services;
+using BTL_LapTrinhWeb.BLL;
 using System;
-using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -9,11 +8,12 @@ namespace BTL_LapTrinhWeb.Admin
 {
     public partial class Admin : System.Web.UI.Page
     {
-        private readonly ProductService service = new ProductService();
+        // Sử dụng Manager trực tiếp để quản lý dữ liệu SQL
+        private ProductManager _pm = new ProductManager();
 
-        // ================= PAGE LOAD =================
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Kiểm tra quyền đăng nhập (Admin)
             if (Session["UserLoggedIn"] == null)
             {
                 Response.Redirect("~/Presentation/LogIn.aspx");
@@ -26,31 +26,33 @@ namespace BTL_LapTrinhWeb.Admin
             }
         }
 
-        // ================= BIND =================
         private void BindGrid(string keyword = "")
         {
-            gvProducts.DataSource = service.Search(keyword); // ✔ đúng
+            // Nếu không có từ khóa, lấy toàn bộ. Nếu có, gọi hàm Search từ SQL
+            if (string.IsNullOrEmpty(keyword))
+            {
+                gvProducts.DataSource = _pm.GetAll();
+            }
+            else
+            {
+                gvProducts.DataSource = _pm.Search(keyword);
+            }
+
+            gvProducts.DataKeyNames = new string[] { "ProductID" };
             gvProducts.DataBind();
         }
 
-        // ================= SEARCH =================
         protected void btnSearch_Click(object sender, ImageClickEventArgs e)
         {
             BindGrid(txtSearch.Text.Trim());
         }
 
-        // ================= NAVIGATION =================
         protected void btnAddProduct_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Presentation/AdminAddProduct.aspx");
         }
 
-        protected void btnBackToLogin_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("~/Presentation/LogIn.aspx");
-        }
-
-        // ================= GRID EDIT =================
+        // --- XỬ LÝ SỬA TRÊN GRIDVIEW ---
         protected void gvProducts_RowEditing(object sender, GridViewEditEventArgs e)
         {
             gvProducts.EditIndex = e.NewEditIndex;
@@ -63,74 +65,50 @@ namespace BTL_LapTrinhWeb.Admin
             BindGrid(txtSearch.Text.Trim());
         }
 
-        // ================= UPDATE =================
         protected void gvProducts_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
-            int id = Convert.ToInt32(gvProducts.DataKeys[e.RowIndex].Value);
             GridViewRow row = gvProducts.Rows[e.RowIndex];
+            int id = Convert.ToInt32(gvProducts.DataKeys[e.RowIndex].Value);
 
-            FileUpload fuImage = row.FindControl("fuImageUrlEdit") as FileUpload;
-            HiddenField hdnImage = row.FindControl("hdnImageUrl") as HiddenField;
+            // Tìm sản phẩm hiện tại trong SQL để giữ lại các thông tin không sửa (như Image)
+            Products p = _pm.GetByID(id);
 
-            string gender = (row.FindControl("txtGender") as TextBox)?.Text;
-            string imageUrl = hdnImage?.Value;
-
-            // ===== HANDLE UPLOAD IMAGE =====
-            if (fuImage != null && fuImage.HasFile)
+            if (p != null)
             {
-                try
-                {
-                    string fileName = Path.GetFileName(fuImage.FileName);
-                    string folder = $"~/Assets/images/{gender}";
-                    string serverFolder = Server.MapPath(folder);
+                p.ProductName = (row.FindControl("txtName") as TextBox).Text;
+                p.Gender = (row.FindControl("ddlGenderEdit") as DropDownList).SelectedValue;
+                p.Description = (row.FindControl("txtDescription") as TextBox).Text;
 
-                    if (!Directory.Exists(serverFolder))
-                        Directory.CreateDirectory(serverFolder);
+                decimal.TryParse((row.FindControl("txtPrice") as TextBox).Text, out decimal price);
+                decimal.TryParse((row.FindControl("txtSale") as TextBox).Text, out decimal sale);
 
-                    string fullPath = Path.Combine(serverFolder, fileName);
-                    fuImage.SaveAs(fullPath);
+                p.Price = price;
+                p.SalePercent = sale;
 
-                    imageUrl = folder + "/" + fileName;
-                }
-                catch { }
+                // Cập nhật xuống SQL Server
+                _pm.Update(p);
             }
-
-            // ===== BUILD OBJECT =====
-            Products p = new Products
-            {
-                ProductID = id,
-                Name = (row.FindControl("txtName") as TextBox)?.Text,
-                Category = (row.FindControl("txtCategory") as TextBox)?.Text,
-                Gender = gender,
-                Description = (row.FindControl("txtDescription") as TextBox)?.Text,
-                ImageUrl = imageUrl
-            };
-
-            decimal.TryParse((row.FindControl("txtPrice") as TextBox)?.Text, out decimal price);
-            int.TryParse((row.FindControl("txtSale") as TextBox)?.Text, out int sale);
-
-            p.Price = price;
-            p.Sale = sale;
-
-            service.UpdateProduct(p);
 
             gvProducts.EditIndex = -1;
             BindGrid(txtSearch.Text.Trim());
         }
 
-        // ================= DELETE =================
+        // --- XỬ LÝ XÓA ---
         protected void gvProducts_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
             int id = Convert.ToInt32(gvProducts.DataKeys[e.RowIndex].Value);
-            service.DeleteProduct(id);
+
+            // Thực thi xóa trong SQL Server
+            _pm.Delete(id);
 
             BindGrid(txtSearch.Text.Trim());
         }
 
-        // ================= TRUNCATE =================
         public string TruncateDescription(object description, int maxLength = 100)
         {
-            return service.Truncate(description?.ToString(), maxLength);
+            if (description == null) return "";
+            string text = description.ToString();
+            return text.Length > maxLength ? text.Substring(0, maxLength) + "..." : text;
         }
     }
 }

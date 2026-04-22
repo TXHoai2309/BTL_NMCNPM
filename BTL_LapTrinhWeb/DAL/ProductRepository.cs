@@ -137,22 +137,23 @@ namespace BTL_LapTrinhWeb.DAL
         {
             return new Products
             {
-                ProductID = (int)reader["ProductID"],
-                ProductName = reader["ProductName"].ToString(),
-                Price = (decimal)reader["Price"],
+                ProductID = Convert.ToInt32(reader["ProductID"]),
+                ProductName = reader["ProductName"]?.ToString(),
+                Price = reader["Price"] != DBNull.Value ? Convert.ToDecimal(reader["Price"]) : 0,
                 Description = reader["Description"]?.ToString(),
                 Image = reader["Image"]?.ToString(),
-                Stock = reader["Stock"] != DBNull.Value ? (int)reader["Stock"] : 0,
 
-                CategoryID = (int)reader["CategoryID"],
-                CategoryName = reader["CategoryName"]?.ToString(), // 🔥 QUAN TRỌNG
+                Stock = reader["Stock"] != DBNull.Value ? Convert.ToInt32(reader["Stock"]) : 0,
+
+                CategoryID = reader["CategoryID"] != DBNull.Value ? Convert.ToInt32(reader["CategoryID"]) : 0,
+                CategoryName = reader["CategoryName"]?.ToString(),
 
                 Gender = reader["Gender"]?.ToString(),
                 Size = reader["Size"]?.ToString(),
 
                 SalePercent = reader["SalePercent"] != DBNull.Value
-                    ? (decimal)reader["SalePercent"]
-                    : 0,
+        ? Convert.ToDecimal(reader["SalePercent"])
+        : 0,
 
                 Image1 = reader["Image1"]?.ToString(),
                 Image2 = reader["Image2"]?.ToString(),
@@ -160,8 +161,8 @@ namespace BTL_LapTrinhWeb.DAL
                 Image4 = reader["Image4"]?.ToString(),
 
                 CreatedAt = reader["CreatedAt"] != DBNull.Value
-                    ? (DateTime?)reader["CreatedAt"]
-                    : null
+        ? Convert.ToDateTime(reader["CreatedAt"])
+        : (DateTime?)null
             };
         }
     }
