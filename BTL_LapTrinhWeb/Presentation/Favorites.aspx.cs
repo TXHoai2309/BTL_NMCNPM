@@ -110,17 +110,16 @@ namespace BTL_LapTrinhWeb
 
         protected void btnAddToCart_Click(object sender, EventArgs e)
         {
-            string uniqueId = ((Button)sender).CommandArgument;
+            Button btn = (Button)sender;
 
-            var parts = uniqueId.Split('-');
-            if (parts.Length != 2) return;
+            int productId = int.Parse(btn.CommandArgument);
 
-            Response.Redirect($"~/Presentation/Product_Detail.aspx?id={parts[1]}");
+            // 👉 chuyển sang trang chi tiết
+            Response.Redirect("~/Presentation/Product_Detail.aspx?id=" + productId);
         }
 
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
-
             if (Session["UserLoggedIn"] != null)
             {
                 Response.Redirect("~/Presentation/MyAccount.aspx");
