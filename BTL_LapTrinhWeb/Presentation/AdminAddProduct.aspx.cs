@@ -15,16 +15,17 @@ namespace BTL_LapTrinhWeb.Admin
         {
             if (Session["UserLoggedIn"] == null)
             {
-                // Nếu chưa đăng nhập quay về trang Login 
-                Response.Redirect("~/LogIn.aspx");
+                // Nếu chưa đăng nhập quay về trang Login
+                Response.Redirect("~/Presentation/LogIn.aspx");
                 return;
             }
         }
+
         private string SaveFileAndGetPath(FileUpload fileUploadControl, string gender)
         {
             if (fileUploadControl.HasFile)
             {
-                // Kiểm tra xem admin có thực sự chọn tệp để tải lên không. Nếu không trả về null 
+                // Kiểm tra xem admin có thực sự chọn tệp để tải lên không. Nếu không trả về null
                 try
                 {
                     string fileName = Path.GetFileName(fileUploadControl.FileName);
@@ -54,6 +55,7 @@ namespace BTL_LapTrinhWeb.Admin
             }
             return null;
         }
+
         protected void btnSave_Click(object sender, EventArgs e)
         {
             string gender = ddlGender.SelectedValue;
@@ -86,7 +88,7 @@ namespace BTL_LapTrinhWeb.Admin
             {
                 allProducts = new List<Products>();
             }
-            // Tìm id lớn nhất hiện có và cộng thêm 1 
+            // Tìm id lớn nhất hiện có và cộng thêm 1
             int newProductId = (allProducts.Any() ? allProducts.Max(p => p.ProductID) : 0) + 1;
 
             Products newProduct = new Products
@@ -105,13 +107,18 @@ namespace BTL_LapTrinhWeb.Admin
                 Sale = string.IsNullOrEmpty(txtSale.Text) ? 0 : int.Parse(txtSale.Text),
                 ProductUrl = "#"
             };
-            // Lưu vào cơ sở dữ liệu 
+            // Lưu vào cơ sở dữ liệu
             allProducts.Add(newProduct);
             Application["AllProducts"] = allProducts;
-            // đồng bộ hóa 
+            // đồng bộ hóa
             UpdateSpecificProductLists();
             // chuyển hướng
-            Response.Redirect("~/Admin.aspx");
+            Response.Redirect("~/Presentation/Admin.aspx");
+        }
+
+        protected void btnCancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Presentation/Admin.aspx"); // ✔ đúng
         }
 
         private void UpdateSpecificProductLists()

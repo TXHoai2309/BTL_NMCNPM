@@ -59,7 +59,7 @@ namespace BTL_LapTrinhWeb
                 // 👉 PHÂN ROLE (admin)
                 if (foundUser.Username.Equals("admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    Response.Redirect("~/Presentation/Admin.cs");
+                    Response.Redirect("~/Presentation/Admin.aspx");
                 }
                 else
                 {
@@ -73,7 +73,8 @@ namespace BTL_LapTrinhWeb
             }
         }
 
-        protected void search_button_Click(object sender, ImageClickEventArgs e) { }
+        protected void search_button_Click(object sender, ImageClickEventArgs e)
+        { }
 
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
@@ -105,6 +106,7 @@ namespace BTL_LapTrinhWeb
             }
         }
 
-        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e) { }
+        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e)
+        { }
     }
 }

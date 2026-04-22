@@ -1,7 +1,8 @@
-﻿using System;
+﻿using BTL_LapTrinhWeb.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BTL_LapTrinhWeb.Models;
+using System.Web;
 
 namespace BTL_LapTrinhWeb.DAL
 {
@@ -12,6 +13,11 @@ namespace BTL_LapTrinhWeb.DAL
         {
             var products = System.Web.HttpContext.Current.Application["AllProducts"] as List<Products>;
             return products ?? new List<Products>();
+        }
+
+        public void Save(List<Products> products)
+        {
+            HttpContext.Current.Application["AllProducts"] = products;
         }
     }
 }

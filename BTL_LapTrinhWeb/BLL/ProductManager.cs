@@ -50,9 +50,11 @@ namespace BTL_LapTrinhWeb.BLL
                 case "lt100":
                     products = products.Where(p => p.Price < 100);
                     break;
+
                 case "100_500":
                     products = products.Where(p => p.Price >= 100 && p.Price <= 500);
                     break;
+
                 case "gt500":
                     products = products.Where(p => p.Price > 500);
                     break;
@@ -63,18 +65,71 @@ namespace BTL_LapTrinhWeb.BLL
                 case "name_asc":
                     products = products.OrderBy(p => p.Name);
                     break;
+
                 case "name_desc":
                     products = products.OrderByDescending(p => p.Name);
                     break;
+
                 case "price_asc":
                     products = products.OrderBy(p => p.Price);
                     break;
+
                 case "price_desc":
                     products = products.OrderByDescending(p => p.Price);
                     break;
             }
 
             return products.ToList();
+        }
+
+        public List<Products> Search(string keyword)
+        {
+            var products = _repo.GetAllProducts();
+
+            if (string.IsNullOrEmpty(keyword))
+                return products;
+
+            keyword = keyword.ToLower();
+
+            return products.Where(p =>
+                p.Name.ToLower().Contains(keyword) ||
+                p.Category.ToLower().Contains(keyword) ||
+                p.Gender.ToLower().Contains(keyword)
+            ).ToList();
+        }
+
+        public void Update(Products updated)
+        {
+            var products = _repo.GetAllProducts();
+
+            var p = products.FirstOrDefault(x => x.ProductID == updated.ProductID);
+            if (p == null) return;
+
+            p.Name = updated.Name;
+            p.Price = updated.Price;
+            p.Category = updated.Category;
+            p.Gender = updated.Gender;
+            p.Description = updated.Description;
+            p.Sale = updated.Sale;
+            p.ImageUrl = updated.ImageUrl;
+
+            _repo.Save(products);
+        }
+
+        public void Delete(int id)
+        {
+            var products = _repo.GetAllProducts();
+            products.RemoveAll(p => p.ProductID == id);
+            _repo.Save(products);
+        }
+
+        public string Truncate(string text, int maxLength)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+
+            return text.Length <= maxLength
+                ? text
+                : text.Substring(0, maxLength) + "...";
         }
 
         public decimal GetDiscountPrice(Products p)

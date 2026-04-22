@@ -24,6 +24,26 @@ public class ProductService
         );
     }
 
+    public void UpdateProduct(Products p)
+    {
+        _manager.Update(p);
+    }
+
+    public void DeleteProduct(int id)
+    {
+        _manager.Delete(id);
+    }
+
+    public string Truncate(string text, int maxLength)
+    {
+        return _manager.Truncate(text, maxLength);
+    }
+
+    public List<Products> Search(string keyword)
+    {
+        return _manager.Search(keyword);
+    }
+
     public decimal GetDisplayPrice(Products product)
     {
         return _manager.GetDiscountPrice(product);
