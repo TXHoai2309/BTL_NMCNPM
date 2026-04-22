@@ -59,11 +59,11 @@
                 </div>
 
                 <div class="thumbnail_container">
-                    <img id="imgThumbnailMain" runat="server" alt="Product Main View" />
-                    <img id="imgThumbnailBack" runat="server" alt="Product Back View" />
-                    <img id="imgThumbnailLeft" runat="server" alt="Product Left View" />
-                    <img id="imgThumbnailTop" runat="server" alt="Product Top View" />
-                    <img id="imgThumbnailUnder" runat="server" alt="Product Under View" />
+                    <img id="imgThumbnailMain" runat="server" alt="Product Main View" class="thumbnail_image" />
+                    <img id="imgThumbnailBack" runat="server" alt="Product Back View" class="thumbnail_image" />
+                    <img id="imgThumbnailLeft" runat="server" alt="Product Left View" class="thumbnail_image" />
+                    <img id="imgThumbnailTop" runat="server" alt="Product Top View" class="thumbnail_image" />
+                    <img id="imgThumbnailUnder" runat="server" alt="Product Under View" class="thumbnail_image" />
                 </div>
             </div>
             <div class="product_info">
@@ -116,20 +116,17 @@
                         <ul class="product_list">
                     </HeaderTemplate>
                     <ItemTemplate>
-                        <li data-category='<%# Eval("Category") %>'>
-                            <div class="product_item">
+                        <li data-category='<%# Eval("CategoryName") %>'> <div class="product_item">
                                 <div class="product_top">
-                                    <%# (int)Eval("Sale") > 0 ? $"<div class='sale-ribbon'>-{(int)Eval("Sale")}%</div>" : "" %>
-                                    <asp:HyperLink runat="server" CssClass="product_img" NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>'>
-                                                <asp:Image runat="server" ImageUrl='<%# ResolveUrl(Eval("ImageUrl").ToString()) %>' AlternateText='<%# Eval("Name") %>' />
-                                    </asp:HyperLink>
+                                    <%# (Convert.ToDecimal(Eval("SalePercent"))) > 0 ? $"<div class='sale-ribbon'>-{Eval("SalePercent")}%</div>" : "" %> <asp:HyperLink runat="server" CssClass="product_img" NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>'>
+                                                <asp:Image runat="server" ImageUrl='<%# ResolveUrl(Eval("Image").ToString()) %>' AlternateText='<%# Eval("ProductName") %>' /> </asp:HyperLink>
                                     <asp:ImageButton runat="server" CssClass="favorite_icon_similar"
-                                        CommandArgument='<%# Eval("ProductID") %>' OnClick="btnAddToFavorites_Click"
-                                        ImageUrl='<%# IsFavorite(Eval("ProductID").ToString(), Eval("Gender").ToString()) ? "~/Assets/images/Chung/icon_favorite_green.png" : "~/Assets/images/Chung/icon_favorite.png" %>' />
+                                        CommandArgument='<%# Eval("ProductID") %>' 
+                                        OnClick="btnAddToFavorites_Click"
+                                        ImageUrl='<%# IsFavorite(Eval("ProductID").ToString()) ? "~/Assets/images/Chung/icon_favorite_green.png" : "~/Assets/images/Chung/icon_favorite.png" %>' />
                                 </div>
                                 <div class="product_info">
-                                    <asp:HyperLink runat="server" CssClass="product_name" NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>' Text='<%# Eval("Name") %>'></asp:HyperLink><br />
-                                    <%# GetPriceDisplay(Container.DataItem) %>
+                                    <asp:HyperLink runat="server" CssClass="product_name" NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>' Text='<%# Eval("ProductName") %>'></asp:HyperLink><br /> <%# GetPriceDisplay(Container.DataItem) %>
                                 </div>
                             </div>
                         </li>
@@ -140,21 +137,18 @@
                 </asp:Repeater>
             </div>
         </div>
-        <!-- Hoài sưả -->
-        <!-- ======================= PHẦN REVIEW ======================= -->
+
         <section class="product-reviews-section" id="reviews">
             <h2 class="review-title">Customer Reviews for 
         <span id="review_product_name" runat="server" class="review-product-name"></span>
             </h2>
             <hr class="divider" />
 
-            <!-- ===== FORM THÊM/SỬA BÌNH LUẬN ===== -->
             <asp:Panel ID="pnlAddReview" runat="server" Visible="false" CssClass="review-form">
                 <h3 class="form-header">
                     <asp:Label ID="lblFormTitle" runat="server" Text="Write a Review" />
                 </h3>
 
-                <!-- Chọn số sao -->
                 <div class="form-group">
                     <label class="label-rating">Your Rating:</label>
                     <asp:DropDownList ID="ddlRating" runat="server" CssClass="rating-dropdown">
@@ -167,7 +161,6 @@
                     </asp:DropDownList>
                 </div>
 
-                <!-- Nội dung bình luận -->
                 <div class="form-group">
                     <label class="label-comment">Your Comment:</label><br />
                     <asp:TextBox ID="txtReview" runat="server" TextMode="MultiLine"
@@ -184,7 +177,6 @@
 
             <hr class="divider" />
 
-            <!-- ===== DANH SÁCH REVIEW ===== -->
             <asp:Label ID="lblNoReview" runat="server"
                 Text="No reviews yet. Be the first to share your thoughts!"
                 Visible="false" CssClass="no-review"></asp:Label>
@@ -212,7 +204,6 @@
                             <div class="review-footer">
                                 <span class="review-date"><%# Eval("DatePosted") %></span>
 
-                                <!-- Chỉ người viết mới thấy -->
                                 <asp:Panel ID="pnlActions" runat="server"
                                     Visible='<%# (bool)Eval("CanEdit") %>'
                                     CssClass="review-actions">
@@ -237,9 +228,6 @@
                 <FooterTemplate></div></FooterTemplate>
             </asp:Repeater>
         </section>
-        <!-- =================== HẾT PHẦN REVIEW =================== -->
-
-
 
         <footer class="footer_container">
             <div class="shop_menu">
@@ -280,18 +268,13 @@
     </form>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
-
             const mainImage = document.getElementById('<%= main_image.ClientID %>');
-
             const thumbnails = document.querySelectorAll('.thumbnail_image');
 
             thumbnails.forEach(function (thumbnail) {
                 thumbnail.addEventListener('click', function () {
-
                     mainImage.src = this.src;
-
                     thumbnails.forEach(t => t.classList.remove('active-thumbnail'));
-
                     this.classList.add('active-thumbnail');
                 });
             });
