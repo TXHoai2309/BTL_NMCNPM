@@ -59,7 +59,7 @@ namespace BTL_LapTrinhWeb
                 // 👉 PHÂN ROLE (admin)
                 if (foundUser.Username.Equals("admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    Response.Redirect("~/Presentation/Admin.cs");
+                    Response.Redirect("~/Presentation/Admin.aspx");
                 }
                 else
                 {
