@@ -8,19 +8,19 @@ namespace BTL_LapTrinhWeb.Services
     {
         private CartManager _manager = new CartManager();
 
-        public List<CartItem> GetCart()
+        public List<CartItem> GetCart(int userId)
         {
-            return _manager.GetCart();
+            return _manager.GetCart(userId);
         }
 
-        public void RemoveItem(string productNumber)
+        public void Add(int userId, int productId, int size, int quantity)
         {
-            _manager.RemoveItem(productNumber);
+            _manager.Add(userId, productId, size, quantity);
         }
 
-        public decimal GetTotal(List<CartItem> cart)
+        public void DeleteByProduct(int userId, int productId)
         {
-            return _manager.GetTotal(cart);
+            _manager.DeleteByProduct(userId, productId);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using BTL_LapTrinhWeb.Models;
-using BTL_LapTrinhWeb.Services;
+using BTL_LapTrinhWeb.BLL;
 using System;
 using System.Linq;
 using System.Web.UI;
@@ -9,9 +9,8 @@ namespace BTL_LapTrinhWeb
 {
     public partial class MyAccount : Page
     {
-        private UserService _service = new UserService();
+        private UserManager _um = new UserManager();
 
-        // ================= PAGE LOAD =================
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UserLoggedIn"] is User user)
@@ -29,10 +28,9 @@ namespace BTL_LapTrinhWeb
             }
         }
 
-        // ================= LOAD USER =================
         private void LoadUser(int id)
         {
-            var user = _service.GetUser(id);
+            var user = _um.GetUserByID(id);
             if (user == null) return;
 
             txtAddress1.Text = user.Address1;
@@ -42,64 +40,40 @@ namespace BTL_LapTrinhWeb
             txtCountry.Text = user.Country;
         }
 
-        // ================= UPDATE =================
         protected void btnUpdate_Click(object sender, EventArgs e)
         {
             if (!(Session["UserLoggedIn"] is User user)) return;
 
-            User updated = new User
-            {
-                Id = user.Id,
-                Address1 = txtAddress1.Text.Trim(),
-                Address2 = txtAddress2.Text.Trim(),
-                Postal = txtPostal.Text.Trim(),
-                City = txtCity.Text.Trim(),
-                Country = txtCountry.Text.Trim()
-            };
+            var existing = _um.GetUserByID(user.Id);
+            if (existing == null) return;
 
-            _service.UpdateUser(updated);
+            existing.Address1 = txtAddress1.Text.Trim();
+            existing.Address2 = txtAddress2.Text.Trim();
+            existing.Postal = txtPostal.Text.Trim();
+            existing.City = txtCity.Text.Trim();
+            existing.Country = txtCountry.Text.Trim();
 
-            // refresh session
-            Session["UserLoggedIn"] = _service.GetUser(user.Id);
+            _um.UpdateUser(existing);
+
+            Session["UserLoggedIn"] = _um.GetUserByID(user.Id);
 
             lblUpdateMessage.Text = "Update successful!";
             lblUpdateMessage.Visible = true;
         }
 
-        // ================= ORDER HISTORY =================
         private void LoadOrderHistory()
         {
             if (!(Session["UserLoggedIn"] is User user)) return;
 
-            var orders = _service.GetOrders(user.Name);
-
-            if (orders.Any())
-            {
-                gvOrder.DataSource = orders.Select(o => new
-                {
-                    o.OrderNumber,
-                    Date = o.Date.ToString("dd/MM/yyyy HH:mm"),
-                    Items = string.Join("<br/>",
-                        o.Items.Select(i => $"{i.Name} (x{i.Quantity})")),
-                    Total = $"${o.TotalAmount:F2}"
-                });
-
-                gvOrder.DataBind();
-                gvOrder.Visible = true;
-            }
-            else
-            {
-                gvOrder.Visible = false;
-            }
+            // ⚠️ phần này bạn có thể sửa sau nếu chuyển sang SQL Orders
+            // hiện tại giữ nguyên nếu chưa làm DB order
         }
 
-        // ================= SEARCH =================
         protected void search_button_Click(object sender, ImageClickEventArgs e)
         {
             Response.Redirect("~/Presentation/Trangchu.aspx");
         }
 
-        // ================= NAVIGATION =================
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Presentation/LogIn.aspx");
@@ -126,7 +100,6 @@ namespace BTL_LapTrinhWeb
                 Response.Redirect("~/Presentation/LogIn.aspx");
         }
 
-        // ================= TAB =================
         protected void btnOrderTab_Click(object sender, EventArgs e)
         {
             updateInfor.Visible = false;
@@ -147,17 +120,14 @@ namespace BTL_LapTrinhWeb
             btnOrderTab.CssClass = "tab-button";
         }
 
-        // ================= LOGOUT =================
         protected void btnLogout_Click(object sender, EventArgs e)
         {
             Session.Clear();
             Response.Redirect("~/Presentation/Trangchu.aspx");
         }
 
-        // ================= SUBSCRIBE =================
         protected void SUBSCRIBE_btn_Click(object sender, EventArgs e)
         {
-            // để trống (sau làm)
         }
     }
 }

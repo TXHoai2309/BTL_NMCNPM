@@ -98,20 +98,38 @@
                             <ul class="product_list">
                         </HeaderTemplate>
                         <ItemTemplate>
-                            <li data-category='<%# Eval("Category") %>'>
+                            <li data-category='<%# Eval("CategoryID") %>'>
                                 <div class="product_item">
                                     <div class="product_top">
-                                        <%# (int)Eval("Sale") > 0 ? $"<div class='sale-ribbon'>-{(int)Eval("Sale")}%</div>" : "" %>
-                                        <asp:HyperLink runat="server" CssClass="product_img" NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>'>
-                                            <asp:Image runat="server" ImageUrl='<%# ResolveUrl(Eval("ImageUrl").ToString()) %>' AlternateText='<%# Eval("Name") %>' />
+
+                                        <%# (Convert.ToDecimal(Eval("SalePercent")) > 0 
+                                            ? "<div class='sale-ribbon'>-" + Eval("SalePercent") + "%</div>" 
+                                            : "") %>
+
+                                        <asp:HyperLink runat="server" CssClass="product_img"
+                                            NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>'>
+
+                                            <asp:Image runat="server"
+                                                ImageUrl='<%# Eval("Image") != null ? ResolveUrl(Eval("Image").ToString()) : "~/Assets/images/no-image.png" %>'
+                                                AlternateText='<%# Eval("ProductName") %>' />
                                         </asp:HyperLink>
+
                                         <asp:ImageButton runat="server" CssClass="favorite_icon"
                                             CommandArgument='<%# Eval("ProductID") %>' OnClick="btnAddToFavorites_Click"
                                             ImageUrl='<%# IsFavorite(Eval("ProductID").ToString(), "Men") ? "~/Assets/images/Chung/icon_favorite_green.png" : "~/Assets/images/Chung/icon_favorite.png" %>' />
-                                        <asp:LinkButton runat="server" CssClass="buy_now" Text="Buy Now" CommandArgument='<%# Eval("ProductID") %>' OnClick="btnBuyNow_Click" />
+
+                                        <asp:LinkButton runat="server" CssClass="buy_now"
+                                            Text="Buy Now"
+                                            CommandArgument='<%# Eval("ProductID") %>'
+                                            OnClick="btnBuyNow_Click" />
+
                                     </div>
+
                                     <div class="product_info">
-                                        <asp:HyperLink runat="server" CssClass="product_name" NavigateUrl='<%# ResolveUrl(Eval("ProductUrl").ToString()) %>' Text='<%# Eval("Name") %>'></asp:HyperLink><br />
+                                        <asp:HyperLink runat="server" CssClass="product_name"
+                                            NavigateUrl='<%# ResolveUrl("~/Presentation/Product_Detail.aspx?id=" + Eval("ProductID")) %>'
+                                            Text='<%# Eval("ProductName") %>' />
+
                                         <%# GetPriceDisplay(Container.DataItem) %>
                                     </div>
                                 </div>
