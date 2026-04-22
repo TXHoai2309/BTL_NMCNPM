@@ -16,6 +16,15 @@ namespace BTL_LapTrinhWeb
             {
                 LoadBestSellers();
             }
+            if (Session["UserLoggedIn"] != null)
+            {
+                User loggedInUser = (User)Session["UserLoggedIn"];
+                lnkSignIn.Text = loggedInUser.Username;
+            }
+            else
+            {
+                lnkSignIn.Text = "Sign In";
+            }
         }
 
         private void LoadBestSellers()

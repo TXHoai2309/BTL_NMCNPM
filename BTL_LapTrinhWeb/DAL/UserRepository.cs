@@ -47,27 +47,34 @@ namespace BTL_LapTrinhWeb.DAL
 
         public void Register(User u)
         {
-            using (SqlConnection conn = DBHelper.GetConnection())
+            try
             {
-                SqlCommand cmd = new SqlCommand("sp_RegisterUser", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
+                using (SqlConnection conn = DBHelper.GetConnection())
+                {
+                    SqlCommand cmd = new SqlCommand("sp_RegisterUser", conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@Username", u.Username);
-                cmd.Parameters.AddWithValue("@Password", u.Password);
-                cmd.Parameters.AddWithValue("@Surname", u.Surname);
-                cmd.Parameters.AddWithValue("@Name", u.Name);
-                cmd.Parameters.AddWithValue("@Email", u.Email);
-                cmd.Parameters.AddWithValue("@Phone", u.Phone);
-                cmd.Parameters.AddWithValue("@QueQuan", u.QueQuan);
+                    cmd.Parameters.AddWithValue("@Username", u.Username);
+                    cmd.Parameters.AddWithValue("@Password", u.Password);
+                    cmd.Parameters.AddWithValue("@Surname", u.Surname);
+                    cmd.Parameters.AddWithValue("@Name", u.Name);
+                    cmd.Parameters.AddWithValue("@Email", u.Email);
+                    cmd.Parameters.AddWithValue("@Phone", u.Phone);
+                    cmd.Parameters.AddWithValue("@QueQuan", u.QueQuan);
+                    cmd.Parameters.AddWithValue("@Address1", (object)u.Address1 ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Address2", (object)u.Address2 ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Postal", (object)u.Postal ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@City", (object)u.City ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Country", (object)u.Country ?? DBNull.Value);
 
-                cmd.Parameters.AddWithValue("@Address1", (object)u.Address1 ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Address2", (object)u.Address2 ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Postal", (object)u.Postal ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@City", (object)u.City ?? DBNull.Value);
-                cmd.Parameters.AddWithValue("@Country", (object)u.Country ?? DBNull.Value);
-
-                conn.Open();
-                cmd.ExecuteNonQuery();
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Đặt breakpoint ở đây, hoặc hiện thông báo lỗi
+                throw new Exception("Lỗi đăng ký: " + ex.Message);
             }
         }
 
