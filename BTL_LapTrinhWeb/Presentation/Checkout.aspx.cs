@@ -201,20 +201,28 @@ namespace BTL_LapTrinhWeb
             var cart = GetCart();
             var user = GetCurrentUser();
 
-            if (!cart.Any() || user == null)
+            if (!cart.Any())
             {
-                Response.Redirect("~/Presentation/Cart.aspx");
+                throw new Exception("Cart rỗng");
+            }
+
+            if (user == null)
+            {
+                Response.Redirect("~/Presentation/LogIn.aspx");
                 return;
             }
 
             var order = _service.ProcessOrder(
-                user,
-                cart,
-                rblPaymentMethod.SelectedValue,
-                txtAddress1.Text,
-                txtCity.Text,
-                txtPostal.Text
-            );
+                  user,
+                    cart,
+                    rblPaymentMethod.SelectedValue,
+                    txtAddress1.Text,
+                    txtCity.Text,
+                    txtPostal.Text
+);
+
+            // 🔥 THIẾU DÒNG NÀY
+            order.UserID = user.UserID;
 
             Session.Remove("ShoppingCart");
             Session["LastOrderCode"] = order.OrderNumber;

@@ -46,7 +46,7 @@ namespace BTL_LapTrinhWeb.DAL
                         Name = rd["ProductName"].ToString(),
                         Price = (decimal)rd["Price"],
                         Sale = (int)(decimal)rd["SalePercent"],
-                        Size = rd["Size"] != DBNull.Value ? (int)rd["Size"] : 0,
+                        Size = rd["Size"] != DBNull.Value ? rd["Size"].ToString() : "",
                         Quantity = (int)rd["Quantity"],
                         ImageUrl = rd["Image"].ToString()
                     });

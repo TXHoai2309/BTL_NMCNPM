@@ -12,7 +12,7 @@ namespace BTL_LapTrinhWeb.Models
         public decimal Price { get; set; }
         public int Sale { get; set; }
         public string ProductNumber { get; set; }
-        public int Size { get; set; }
+        public string Size { get; set; }
         public int Quantity { get; set; }
         public string ImageUrl { get; set; }
 

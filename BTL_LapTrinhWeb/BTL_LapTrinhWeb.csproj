@@ -323,12 +323,6 @@
     <Compile Include="DAL\CartRepository.cs" />
     <Compile Include="DAL\DBHelper.cs" />
     <Compile Include="DAL\OrderDA.cs" />
-    <Compile Include="DAL\OrderDA.cs.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="DAL\OrderDA.cs.designer.cs">
-      <DependentUpon>OrderDA.cs.cs</DependentUpon>
-    </Compile>
     <Compile Include="DAL\OrderRepository.cs" />
     <Compile Include="DAL\ProductDetailRepository.cs" />
     <Compile Include="DAL\ProductRepository.cs" />

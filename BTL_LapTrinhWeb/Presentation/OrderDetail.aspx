@@ -252,7 +252,7 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:BoundField DataField="Quantity" HeaderText="Qty" />
+                            <asp:BoundField DataField="Quantity" HeaderText="Quantity" />
                             <asp:BoundField DataField="Price" HeaderText="Price" />
 
                         </Columns>
