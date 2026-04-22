@@ -303,6 +303,7 @@
     <Content Include="Presentation\ManageUser.aspx" />
     <Content Include="Presentation\Men.aspx" />
     <Content Include="Presentation\MyAccount.aspx" />
+    <Content Include="Presentation\OrderDetail.aspx" />
     <Content Include="Presentation\Product_Detail.aspx" />
     <Content Include="Presentation\Sale.aspx" />
     <Content Include="Presentation\SignIn.aspx" />
@@ -315,11 +316,19 @@
     <Compile Include="BLL\CartManager.cs" />
     <Compile Include="BLL\CheckoutManager.cs" />
     <Compile Include="BLL\FavoritesManager.cs" />
+    <Compile Include="BLL\OrderBLL.cs" />
     <Compile Include="BLL\ProductDetailManager.cs" />
     <Compile Include="BLL\ProductManager.cs" />
     <Compile Include="BLL\UserManager.cs" />
     <Compile Include="DAL\CartRepository.cs" />
     <Compile Include="DAL\DBHelper.cs" />
+    <Compile Include="DAL\OrderDA.cs" />
+    <Compile Include="DAL\OrderDA.cs.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DAL\OrderDA.cs.designer.cs">
+      <DependentUpon>OrderDA.cs.cs</DependentUpon>
+    </Compile>
     <Compile Include="DAL\OrderRepository.cs" />
     <Compile Include="DAL\ProductDetailRepository.cs" />
     <Compile Include="DAL\ProductRepository.cs" />
@@ -417,6 +426,13 @@
       <DependentUpon>MyAccount.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Presentation\OrderDetail.aspx.cs">
+      <DependentUpon>OrderDetail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Presentation\OrderDetail.aspx.designer.cs">
+      <DependentUpon>OrderDetail.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Presentation\Product_Detail.aspx.cs">
       <DependentUpon>Product_Detail.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -473,6 +489,7 @@
     <Compile Include="Services\CartService.cs" />
     <Compile Include="Services\CheckoutService.cs" />
     <Compile Include="Services\FavoritesService.cs" />
+    <Compile Include="Services\OrderService.cs" />
     <Compile Include="Services\ProductDetailService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ThankYouService.cs" />
