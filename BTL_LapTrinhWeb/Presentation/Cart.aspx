@@ -67,7 +67,7 @@
 
                                         <p>Price: $<%# Eval("Price", "{0:F2}") %></p>
                                         <asp:Literal ID="litSaleInfo" runat="server" Visible="false" />
-                                        <p>ProductID: <%# Eval("ProductID") %></p>
+                                        <p>ProductID: <%# Eval("CartId") %></p>
                                         <p>Quantity: <%# Eval("Quantity") %></p>
                                         <p>Size: <%# Eval("Size") %></p>
 
@@ -81,7 +81,7 @@
                                         alt="Delete"
                                         CssClass="delete-button"
                                         CommandName="Delete"
-                                        CommandArgument='<%# Eval("ProductID") %>'/>
+                                        CommandArgument='<%# Eval("CartID") %>'/>
                                 </div>
                             </div>
                         </ItemTemplate>
