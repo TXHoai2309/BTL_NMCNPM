@@ -26,7 +26,7 @@ namespace BTL_LapTrinhWeb
         {
             if (Session["UserLoggedIn"] is User user)
             {
-                lnkSignIn.Text = user.Name;
+                lnkSignIn.Text = user.Username;
 
                 lnkSignIn.Click -= lnkSignIn_Click;
                 lnkSignIn.Click += lnkMyAccount_Click;
@@ -95,12 +95,19 @@ namespace BTL_LapTrinhWeb
 
         protected void btnRemoveFavorite_Click(object sender, EventArgs e)
         {
-            string id = ((LinkButton)sender).CommandArgument;
+            LinkButton btn = (LinkButton)sender;
 
-            var favorites = GetFavoriteIds();
-            favorites.Remove(id);
+            int productId = int.Parse(btn.CommandArgument);
 
-            Session["Favorites"] = favorites;
+            var favoriteIds = Session["Favorites"] as List<string>;
+
+            if (favoriteIds != null)
+            {
+                // Xóa tất cả item có ID này (men-1, women-1,...)
+                favoriteIds.RemoveAll(x => x.EndsWith("-" + productId));
+
+                Session["Favorites"] = favoriteIds;
+            }
 
             LoadFavorites();
         }
@@ -125,7 +132,8 @@ namespace BTL_LapTrinhWeb
             Response.Redirect("~/Presentation/MyAccount.aspx");
         }
 
-        protected void lnkFavorites_Click(object sender, EventArgs e) { }
+        protected void lnkFavorites_Click(object sender, EventArgs e)
+        { }
 
         protected void lnkCart_Click(object sender, EventArgs e)
         {
@@ -137,8 +145,10 @@ namespace BTL_LapTrinhWeb
             Response.Redirect("~/Presentation/Trangchu.aspx");
         }
 
-        protected void search_button_Click(object sender, EventArgs e) { }
+        protected void search_button_Click(object sender, EventArgs e)
+        { }
 
-        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e) { }
+        protected void SUBSCRIBE_btn_Click(object sender, EventArgs e)
+        { }
     }
 }

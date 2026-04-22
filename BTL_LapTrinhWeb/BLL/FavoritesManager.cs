@@ -45,6 +45,14 @@ namespace BTL_LapTrinhWeb.BLL
             return result;
         }
 
+        public void Remove(string uniqueId, List<string> favoriteIds)
+        {
+            if (favoriteIds.Contains(uniqueId))
+            {
+                favoriteIds.Remove(uniqueId);
+            }
+        }
+
         public decimal GetDiscountPrice(decimal price, int sale)
         {
             return sale > 0 ? price * (1 - (decimal)sale / 100) : price;
