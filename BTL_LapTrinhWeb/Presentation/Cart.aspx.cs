@@ -14,6 +14,15 @@ namespace BTL_LapTrinhWeb
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["UserLoggedIn"] is User loggedInUser)
+            {
+                lnkSignIn.Text = !string.IsNullOrEmpty(loggedInUser.Name) ? loggedInUser.Name : loggedInUser.Username;
+            }
+            else
+            {
+                lnkSignIn.Text = "Sign In";
+            }
+
             if (!IsPostBack)
             {
                 LoadCart();
@@ -99,7 +108,16 @@ namespace BTL_LapTrinhWeb
         }
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
-            Response.Redirect("~/Presentation/LogIn.aspx");
+
+            if (Session["UserLoggedIn"] != null)
+            {
+                Response.Redirect("~/Presentation/MyAccount.aspx");
+            }
+            else
+            {
+                // Nếu chưa, chuyển đến Log In
+                Response.Redirect("~/Presentation/LogIn.aspx");
+            }
         }
         protected void lnkCart_Click(object sender, EventArgs e)
         {
