@@ -26,7 +26,7 @@ namespace BTL_LapTrinhWeb
         {
             if (Session["UserLoggedIn"] is User user)
             {
-                lnkSignIn.Text = user.Name;
+                lnkSignIn.Text = user.Username;
 
                 lnkSignIn.Click -= lnkSignIn_Click;
                 lnkSignIn.Click += lnkMyAccount_Click;
