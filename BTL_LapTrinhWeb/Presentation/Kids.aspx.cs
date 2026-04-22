@@ -70,6 +70,7 @@ namespace BTL_LapTrinhWeb
         {
             LoadProducts();
         }
+
         public bool IsFavorite(string productId, string category)
         {
             // Lấy danh sách yêu thích từ Session đã khởi tạo ở Global.asax
@@ -91,6 +92,7 @@ namespace BTL_LapTrinhWeb
             }
             return $"<span>${p.Price:F2}</span>";
         }
+
         protected void lnkSignIn_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/Presentation/LogIn.aspx");
@@ -113,6 +115,7 @@ namespace BTL_LapTrinhWeb
             else
                 Response.Redirect("~/Presentation/LogIn.aspx");
         }
+
         // Xử lý khi nhấn nút Yêu thích (Trái tim) trên từng sản phẩm
         protected void btnAddToFavorites_Click(object sender, ImageClickEventArgs e)
         {
